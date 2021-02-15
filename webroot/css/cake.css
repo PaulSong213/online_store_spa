@@ -1,4 +1,9 @@
 
+.product-image {
+    height: 40vh;
+    transition: ease-in-out 350ms
+}
+
 .select-false {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */

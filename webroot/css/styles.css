@@ -1,0 +1,128 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 15 Feb 2021, 2:21:38 pm
+    Author     : songalia
+*/
+
+@tailwind base;
+@tailwind components;
+
+.header-discover{
+    @apply  flex justify-between flex-col-reverse md:flex-row my-5;
+}
+
+.header-title{
+    @apply  bg-white flex mt-20 md:mt-0 ;
+}
+
+.header-tags{
+    @apply  text-justify w-full md:w-2/3 lg:w-2/4 opacity-70 hover:opacity-100 transition-all;
+}
+
+.discover-tag{
+    @apply  inline-block text-gray-600 my-0 cursor-pointer border 
+    border-black border-opacity-0 px-3 rounded-full transition-all hover:border-opacity-90
+    hover:bg-gray-900 hover:text-gray-100;
+}
+
+.item-container{
+    @apply grid grid-cols-1 sm:grid-cols-10 lg:grid-cols-3 gap-5 sm:gap-2 overflow-hidden;
+}
+
+.item-description{
+    @apply sm:col-span-full md:col-span-3 lg:col-span-1 h-full overflow-auto 
+        mx-10 md:mx-2 sm:mt-2 px-4 transition-all cursor-pointer transition-all 
+        row-start-3 sm:row-start-2 md:row-start-auto hidden sm:block self-center;
+}
+
+.desciption-text{
+    @apply  text-gray-500 text-justify w-full;
+}
+
+.images-container{
+    @apply  flex flex-col justify-center overflow-hidden sm:col-span-7 
+        md:col-span-5 lg:col-span-1 overflow-hidden sm:px-20 md:px-0 
+        row-start-1 md:row-start-auto relative;
+}
+
+.item-image-slider{
+    @apply  relative overflow-hidden;
+}
+
+.product-image {
+    @apply  block mx-auto w-auto rounded-sm   mb-auto;
+}
+
+.image-navigate-forward {
+    @apply absolute inset-y-2/4 right-0 text-5xl shadow-xl text-gray-100 bg-gray-600 
+    cursor-pointer opacity-50  hover:opacity-100 lg:hidden;  
+}
+
+.image-navigate-back {
+    @apply absolute inset-y-2/4 left-0 text-5xl shadow-xl text-gray-100 bg-gray-600
+    cursor-pointer opacity-50 hover:opacity-100 lg:hidden; 
+}
+
+.name-action-container {
+    @apply  flex flex-col justify-around sm:col-span-3 md:col-span-2 lg:col-span-1
+        row-start-2 row-start-auto;
+}
+
+.name-action {
+    @apply  flex flex-col justify-center ;
+}
+
+.name-product {
+    @apply  font-bold text-center mb-2 text-4xl sm:text-3xl md:text-2xl 
+        lg:text-4xl mx-2 block;
+}
+
+.price-product {
+    @apply flex justify-center py-2 space-x-4;
+}
+
+.actions-product {
+    @apply  grid grid-cols-2 sm:grid-cols-1 lg:grid-cols-2;
+}
+
+.action-add-cart {
+    @apply text-gray-500 cursor-pointer border border-gray-700 
+        border-opacity-0 hover:border-opacity-60 text-2xl md:text-xl lg:text-2xl
+        w-max transition-all py-1 px-5 md:px-2 lg:px-5 rounded-full 
+        hover:text-green-800  mx-auto;
+}
+
+.action-more-info {
+    @apply  text-gray-600 cursor-pointer border border-gray-700 mx-auto
+        border-opacity-0 hover:border-opacity-60 text-2xl md:text-xl lg:text-2xl
+        w-max transition-all py-1 px-5 md:px-2 lg:px-5 rounded-full; 
+}
+
+.buy-title {
+    @apply  text-gray-800 cursor-pointer border border-gray-800 border-opacity-100
+        border-opacity-0  text-2xl lg:text-3xl hover:bg-gray-800 hover:text-gray-100
+        w-max transition-all py-1 p-5 rounded-full hover:border-opacity-100 mx-auto;
+}
+
+.more-info {
+    @apply  hidden pl-4;
+}
+
+.info-container{
+   @apply  grid grid-cols-2 sm:grid-cols-1 lg:grid-cols-2;   
+}
+
+.info-text {
+    @apply  text-xl my-1;
+}
+
+.info-title {
+    @apply font-extrabold text-gray-400;
+}
+
+
+@tailwind utilities;

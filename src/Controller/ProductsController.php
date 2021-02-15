@@ -123,4 +123,14 @@ class ProductsController extends AppController
         $this->set(compact('products'));
     }
     
+    public function show()
+    {
+        $this->paginate = [
+            'contain' => ['Sellers'],
+        ];
+        $products = $this->paginate($this->Products);
+
+        $this->set(compact('products'));
+    }
+    
 }
