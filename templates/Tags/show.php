@@ -6,4 +6,3 @@
  * and open the template in the editor.
  */
 
-print_r(json_encode($products));

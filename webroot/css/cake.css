@@ -1,4 +1,9 @@
 
+.item-container:hover .image-navigator{
+    display:block;
+    transition: 350ms ease-out;
+}
+
 .product-image {
     height: 40vh;
     transition: ease-in-out 350ms

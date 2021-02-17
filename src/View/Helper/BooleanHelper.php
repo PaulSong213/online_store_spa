@@ -20,4 +20,16 @@ class BooleanHelper extends Helper
         }
         return $textBoolean;
     }
+    
+    public function plain($intBoolean){
+        
+        $plainBoolean = true;
+        
+        if($intBoolean == 0){
+            $plainBoolean = false;
+        }
+        
+        return $plainBoolean;
+    }
+    
 }

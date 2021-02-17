@@ -109,4 +109,15 @@ class ProductsTagsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+    
+    public function show()
+    {
+        $this->paginate = [
+            'contain' => ['Products', 'Tags'],
+        ];
+        $productsTags = $this->paginate($this->ProductsTags);
+        
+        $this->set(compact('productsTags'));
+    }
+    
 }

@@ -104,4 +104,9 @@ class TagsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+    
+    public function show(){
+        $tags = $this->paginate($this->Tags);
+        print_r(json_encode($tags));
+    }
 }

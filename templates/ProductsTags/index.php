@@ -3,7 +3,7 @@
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\ProductsTag[]|\Cake\Collection\CollectionInterface $productsTags
  */
-print_r(json_encode($productsTags))
+//print_r(json_encode($productsTags))
 
 ?>
 <div class="productsTags index content">
