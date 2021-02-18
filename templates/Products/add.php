@@ -19,21 +19,16 @@
                 <?php
                     echo $this->Form->control('name');
                     echo $this->Form->control('price');
-                    echo $this->Form->control('primary_image_url');
-                    echo $this->Form->control('secondary_image_urls');
                     echo $this->Form->control('description');
-                    echo $this->Form->control('is_available',[
-                        'type' => 'checkbox',
-                        'required' => 'false'
-                    ]);
+                    echo $this->Form->control('is_available');
                     echo $this->Form->control('seller_id', ['options' => $sellers]);
                     echo $this->Form->control('quantity');
                     echo $this->Form->control('sold');
                     echo $this->Form->control('warranty_day');
                     echo $this->Form->control('discount_percentage');
-                    echo $this->Form->control('tags._ids', [
-                        'options' => $tags,
-                        'style' => 'height: min-content; max-height; 10rem;']);?>
+                    echo $this->Form->control('product_type_id', ['options' => $productTypes]);
+                    echo $this->Form->control('tags._ids', ['options' => $tags]);
+                ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>
             <?= $this->Form->end() ?>

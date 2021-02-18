@@ -23,10 +23,10 @@ class BooleanHelper extends Helper
     
     public function plain($intBoolean){
         
-        $plainBoolean = true;
+        $plainBoolean = false;
         
-        if($intBoolean == 0){
-            $plainBoolean = false;
+        if($intBoolean){
+            $plainBoolean = true;
         }
         
         return $plainBoolean;

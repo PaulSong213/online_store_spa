@@ -54,7 +54,7 @@ and open the template in the editor.
 }
 
 .product-image {
-    @apply  block mx-auto w-auto rounded-sm   mb-auto;
+    @apply  block mx-auto w-auto rounded-sm   mb-auto h-full;
 }
 
 .image-navigate-forward {

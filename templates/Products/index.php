@@ -15,8 +15,6 @@
                     <th><?= $this->Paginator->sort('name') ?></th>
                     <th><?= $this->Paginator->sort('price','Base Price') ?></th>
                     <th><?= $this->Paginator->sort('Discounted Price') ?></th>
-                    <th><?= $this->Paginator->sort('primary_image_url') ?></th>
-                    <th><?= $this->Paginator->sort('secondary_image_urls') ?></th>
                     <th><?= $this->Paginator->sort('is_available') ?></th>
                     <th><?= $this->Paginator->sort('created') ?></th>
                     <th><?= $this->Paginator->sort('modified') ?></th>
@@ -25,6 +23,7 @@
                     <th><?= $this->Paginator->sort('sold') ?></th>
                     <th><?= $this->Paginator->sort('warranty_day') ?></th>
                     <th><?= $this->Paginator->sort('discount_percentage') ?></th>
+                    <th><?= $this->Paginator->sort('produt_type_id') ?></th>
                     <th class="actions"><?= __('Actions') ?></th>
                 </tr>
             </thead>
@@ -35,8 +34,6 @@
                     <td><?= h($product->name) ?></td>
                     <td><?= $this->Number->format($product->price) ?></td>
                     <td><?= $this->Calculate->discountedPrice($this->Number->format($product->price),$this->Number->format($product->discount_percentage)) ?></td>
-                    <td><?= h($product->primary_image_url) ?></td>
-                    <td><?= h($product->secondary_image_urls) ?></td>
                     <td><?= $this->Boolean->isAvailable($this->Number->format($product->is_available)) ?></td>
                     <td><?= h($product->created) ?></td>
                     <td><?= h($product->modified) ?></td>
@@ -49,6 +46,10 @@
                     <td><?= $this->Number->format($product->sold) ?></td>
                     <td><?= $this->Number->format($product->warranty_day).' Days' ?></td>
                     <td><?= $this->Number->format($product->discount_percentage).'%' ?></td>
+                    <td><?= $product->has('product_type') ? $this->Html->link(
+                            $product->product_type->name,
+                            ['controller' => 'ProductTypes', 'action' => 'view',
+                            $product->product_type->id]) : '' ?></td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['action' => 'view', $product->id]) ?>
                         <?= $this->Html->link(__('Edit'), ['action' => 'edit', $product->id]) ?>

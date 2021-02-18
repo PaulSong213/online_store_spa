@@ -12,6 +12,7 @@ use Cake\Validation\Validator;
  * Products Model
  *
  * @property \App\Model\Table\SellersTable&\Cake\ORM\Association\BelongsTo $Sellers
+ * @property \App\Model\Table\ProductTypesTable&\Cake\ORM\Association\BelongsTo $ProductTypes
  * @property \App\Model\Table\CartsTable&\Cake\ORM\Association\HasMany $Carts
  * @property \App\Model\Table\TagsTable&\Cake\ORM\Association\BelongsToMany $Tags
  *
@@ -53,7 +54,14 @@ class ProductsTable extends Table
             'foreignKey' => 'seller_id',
             'joinType' => 'INNER',
         ]);
+        $this->belongsTo('ProductTypes', [
+            'foreignKey' => 'product_type_id',
+            'joinType' => 'INNER',
+        ]);
         $this->hasMany('Carts', [
+            'foreignKey' => 'product_id',
+        ]);
+        $this->hasMany('Images', [
             'foreignKey' => 'product_id',
         ]);
         $this->belongsToMany('Tags', [
@@ -85,18 +93,6 @@ class ProductsTable extends Table
             ->decimal('price')
             ->requirePresence('price', 'create')
             ->notEmptyString('price');
-
-        $validator
-            ->scalar('primary_image_url')
-            ->maxLength('primary_image_url', 64)
-            ->requirePresence('primary_image_url', 'create')
-            ->notEmptyFile('primary_image_url');
-
-        $validator
-            ->scalar('secondary_image_urls')
-            ->maxLength('secondary_image_urls', 200)
-            ->requirePresence('secondary_image_urls', 'create')
-            ->notEmptyFile('secondary_image_urls');
 
         $validator
             ->scalar('description')
@@ -136,6 +132,7 @@ class ProductsTable extends Table
     public function buildRules(RulesChecker $rules): RulesChecker
     {
         $rules->add($rules->existsIn(['seller_id'], 'Sellers'), ['errorField' => 'seller_id']);
+        $rules->add($rules->existsIn(['product_type_id'], 'ProductTypes'), ['errorField' => 'product_type_id']);
 
         return $rules;
     }

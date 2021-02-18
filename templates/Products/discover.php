@@ -1,17 +1,11 @@
 <?php
-
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 //print_r(json_encode($products));
 ?>
 
 <div class="content mb-10" id="discover">
     <div class="header-discover">
         <div class="header-title">
-            <h1 class="my-auto font-medium" style="margin-right: 1.5vw">Discover</h1>
+            <h1 class="my-auto font-medium" style="margin-right: 1.5vw">Best Seller</h1>
             <h6 class="my-auto font-bold text-xl text-gray-500">SHOP</h6>
         </div>
         <div class="header-tags md:text-right">
@@ -57,7 +51,6 @@
             }
         },
         mounted(){
-            //productCardsMoreInfo(),
             addTagList(),
             addProductTags()
         },
@@ -71,36 +64,50 @@
                 isMoreInfoOpened: true,
                 moreInfoState: "hidden",
                 areTagsLoaded: false,
-                infoButtonTitle: " more Information",
+                infoButtonTitle: "more Information",
                 infoButtonLogoPosition: "",
                 textsState: "",
                 descriptionState: "max-height: 15rem; transition: ease-in 350ms",
-                
+                sliderImages: [
+                    "/img/products/p5.jpg",
+                    "/img/products/p2.jpg",
+                    "/img/products/p3.jpg",
+                    "/img/products/p4.jpg",
+                    "/img/products/p1.jpg"
+                ],
+                currentImageIndex: 0,
+                imageEffect: ""
             }
         },
+        
         props: ['id','name','basePrice','discountedPrice','description','quantity',
             'sold','warranty','isAvailable','productTags'],
         template: 
           `
             <div class="item-container">
-
                 <div class="item-description small-scroll" :style="descriptionState">
                 <h6 class="desciption-text  no-overflow-text" 
                     :class="textsState">{{description}}</h6>
                 </div>
-                
                 <div class="images-container">
-                    <div class="item-image-slider" style="height: 40vh">  
-                         <img src="/img/products/p1.jpg" class="product-image"/>
-                         <img src="/img/products/p2.jpg" class="product-image"/>
-                         <img src="/img/products/p3.jpg" class="product-image"/>
-                         <img src="/img/products/p4.jpg" class="product-image"/>
-                         <img src="/img/products/p5.jpg" class="product-image"/>
+                    <div class="item-image-slider" :class="imageEffect" style="height:40vh">
+                        <section v-for="(el, index) in sliderImages">
+                            <img
+                            v-if="index === currentImageIndex"    
+                            :src="sliderImages[index]" 
+                            class="product-image bg-black fade-in-out"/>
+                            <img
+                            v-else   
+                            :src="sliderImages[index]" 
+                            class="product-image bg-black hidden"/>        
+                        </section>
                     </div>
                     <ion-icon name="chevron-forward-outline" class="image-navigator
-                            image-navigate-forward select-false hidden transition-all"></ion-icon>
+                        image-navigate-forward select-false block md:hidden"
+                        v-on:click="changeSliderImageToNextImage()"></ion-icon>
                     <ion-icon name="chevron-back-outline" class="image-navigator
-                            image-navigate-back select-false hidden transition-all"></ion-icon>
+                        image-navigate-back select-false block md:hidden"
+                        v-on:click="changeSliderImageToNextImage(false)"></ion-icon>
                 </div>
                 
                 <div class="name-action-container">
@@ -121,7 +128,7 @@
                                 <ion-icon name='cart-outline' style="margin-bottom:-2px">
                                 </ion-icon>add to Cart </h5>
                             
-                            <h5 v-else="isAvailable" class="action-add-cart 
+                            <h5 v-else class="action-add-cart 
                                 select-false hover:text-gray-700">
                                 <ion-icon name='bookmark-outline' style="margin-bottom:-2px">
                                 </ion-icon>add to Wishlist </h5>
@@ -191,15 +198,13 @@
                 }
                     
                 if(this.isMoreInfoOpened){
-                    
-                    this.moreInfoState = "block";
+                    this.moreInfoState = "block fade-in";
                     this.infoButtonTitle = " less Information";
                     this.infoButtonLogoPosition = "transform rotate-180 md hydrated";
                     this.textsState = "can-overflow-text";
                     this.descriptionState = "max-height: 50vh; transition: ease-out 350ms";
                     this.isMoreInfoOpened = false;
                 }else{
-                    
                     this.moreInfoState = "hidden";
                     this.infoButtonTitle = " more Information";
                     this.infoButtonLogoPosition = "md hydrated";
@@ -207,9 +212,23 @@
                     this.descriptionState = "max-height: 15rem; transition: ease-out 350ms";
                     this.isMoreInfoOpened = true;
                 }
-                
+            },
+            changeSliderImageToNextImage(toNextImage = true){
+                if(toNextImage){
+                    this.currentImageIndex++;
+                }else{
+                    this.currentImageIndex--;
+                }
+                if(this.currentImageIndex > this.totalImages){this.currentImageIndex = 0}
+                if(this.currentImageIndex < 0){this.currentImageIndex = this.totalImages}
+                this.imageEffect = "fade-in-out";
             }
-        }
+        },
+        computed: {
+            totalImages(){
+                return this.totalImages = this.sliderImages.length - 1;
+            }
+        },
         
     }),
     vm.component('filter-tag',{
@@ -227,8 +246,6 @@
             success: function(data) {
               var result = JSON.parse(data);
               discoverInstace.tags = result;
-              //console.log(discoverInstace.tags);
-              //console.log(result);
             }  
         });
     }
@@ -240,87 +257,17 @@
             success: function(data) {
               var result = JSON.parse(data);
               discoverInstace.productTags = result;
-              //console.log(result);
             }  
         });
     }
     
-    
-    function productCardsMoreInfo(){
-        $(".action-more-info").click(function(){
-        let itemContainer = $(this).parent().parent().parent().parent();
-        let windowSize = $(window).width();
-        let imagesContainer = itemContainer.children(".images-container");
-        let itemDescription = itemContainer.children(".item-description");
-        let itemNameAction = itemContainer.children(".name-action-container");
-        let isMoreInfoShowed = itemNameAction.children(".name-action").children(".name-product").hasClass("can-overflow-text")
-        let imageList = imagesContainer.children(".image-list");
-        if(!isMoreInfoShowed){
-            imageList.removeClass("hidden");
-            $(this).children(".more-info-title").html("less Infomation");
-            $(this).children(".more-info-logo").addClass('transform rotate-180');
-            itemNameAction.children(".name-action").children(".name-product").addClass("can-overflow-text")
-            itemNameAction.children(".more-info").show("fast");
-            itemNameAction.children(".action-buy").show("fast");
-            
-            imagesContainer.children(".image-navigator").show('fast');
-            itemDescription.children(".no-overflow-text").addClass('can-overflow-text');
-            itemDescription.attr('style','max-height: 50vh; transition: ease-out 350ms');
-            
-            itemDescription.show('fast',function(){
-                itemDescription.removeClass('hidden');
-            });
-           }else{
-            imageList.addClass("hidden");
-            $(this).children(".more-info-title").html("more Infomation");
-            $(this).children(".more-info-logo").removeClass('transform rotate-180');
-            itemNameAction.children(".more-info").hide("fast");
-             itemNameAction.children(".action-buy").hide("fast");
-            itemNameAction.children(".name-action").children(".name-product").removeClass("can-overflow-text")
-            imagesContainer.children(".image-navigator").hide('fast');   
-            itemDescription.children(".no-overflow-text").removeClass('can-overflow-text');
-            if(windowSize < 640){
-                itemDescription.addClass('hidden');
-            }
-            itemDescription.attr('style','max-height: 15rem; transition: ease-out 350ms');
-        }
-        
-    });
-    
-    $(".image-navigator").click(function(){
-        var isForward = $(this).hasClass("image-navigate-forward");
-        var currentSlider = $(this).parent().children(".item-image-slider");
-        if(isForward){
-            showDivs(1,currentSlider);
-        }else{
-            showDivs(-1,currentSlider);
-        }
-    });
-    var slideIndex = 0;
-    function showDivs(n, slider) {
-        slideIndex += n;
-        var sliderImages = slider.children(".product-image");  
-        if (slideIndex > sliderImages.length - 1) {slideIndex = 0}
-        if (slideIndex <= -1) {slideIndex = sliderImages.length - 1}
-        
-        $(sliderImages).hide(0,function(){
-            $(this).addClass("opacity-0");
+    $.ajax({
+        url: '/products/show/1',
+            type: 'get',
+            success: function(data) {
+              var result = JSON.parse(data);
+              console.log(result);
+            }  
         });
-        sliderImages.each(function(index,element){
-            if(index === slideIndex){
-                $(element).show(0,function(){
-                    $(this).removeClass("opacity-0");
-                });
-            }
-        });
-    }
-    $(".item-container").hover(function(){
-        $(this).children(".images-container").children(".image-navigator").show("fast");
-    }).mouseleave(function(){
-        if($(window).width() > 640){
-            $(this).children(".images-container").children(".image-navigator").hide("fast");
-        }
-    });
-    }
     
 </script>

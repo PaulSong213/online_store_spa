@@ -3,20 +3,20 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\ProductsTable;
+use App\Model\Table\ProductImagesTable;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\ProductsTable Test Case
+ * App\Model\Table\ProductImagesTable Test Case
  */
-class ProductsTableTest extends TestCase
+class ProductImagesTableTest extends TestCase
 {
     /**
      * Test subject
      *
-     * @var \App\Model\Table\ProductsTable
+     * @var \App\Model\Table\ProductImagesTable
      */
-    protected $Products;
+    protected $ProductImages;
 
     /**
      * Fixtures
@@ -24,11 +24,8 @@ class ProductsTableTest extends TestCase
      * @var array
      */
     protected $fixtures = [
+        'app.ProductImages',
         'app.Products',
-        'app.Sellers',
-        'app.ProductTypes',
-        'app.Carts',
-        'app.Tags',
     ];
 
     /**
@@ -39,8 +36,8 @@ class ProductsTableTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $config = $this->getTableLocator()->exists('Products') ? [] : ['className' => ProductsTable::class];
-        $this->Products = $this->getTableLocator()->get('Products', $config);
+        $config = $this->getTableLocator()->exists('ProductImages') ? [] : ['className' => ProductImagesTable::class];
+        $this->ProductImages = $this->getTableLocator()->get('ProductImages', $config);
     }
 
     /**
@@ -50,7 +47,7 @@ class ProductsTableTest extends TestCase
      */
     public function tearDown(): void
     {
-        unset($this->Products);
+        unset($this->ProductImages);
 
         parent::tearDown();
     }

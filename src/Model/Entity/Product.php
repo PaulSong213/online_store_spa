@@ -11,8 +11,6 @@ use Cake\ORM\Entity;
  * @property int $id
  * @property string $name
  * @property string $price
- * @property string $primary_image_url
- * @property string $secondary_image_urls
  * @property string|null $description
  * @property int $is_available
  * @property \Cake\I18n\FrozenTime $created
@@ -22,8 +20,10 @@ use Cake\ORM\Entity;
  * @property int $sold
  * @property int $warranty_day
  * @property string $discount_percentage
+ * @property int $product_type_id
  *
  * @property \App\Model\Entity\Seller $seller
+ * @property \App\Model\Entity\ProductType $product_type
  * @property \App\Model\Entity\Cart[] $carts
  * @property \App\Model\Entity\Tag[] $tags
  */
@@ -41,8 +41,6 @@ class Product extends Entity
     protected $_accessible = [
         'name' => true,
         'price' => true,
-        'primary_image_url' => true,
-        'secondary_image_urls' => true,
         'description' => true,
         'is_available' => true,
         'created' => true,
@@ -52,7 +50,9 @@ class Product extends Entity
         'sold' => true,
         'warranty_day' => true,
         'discount_percentage' => true,
+        'product_type_id' => true,
         'seller' => true,
+        'product_type' => true,
         'carts' => true,
         'tags' => true,
     ];

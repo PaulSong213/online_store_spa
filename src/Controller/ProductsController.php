@@ -19,7 +19,7 @@ class ProductsController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Sellers'],
+            'contain' => ['Sellers', 'ProductTypes','Images'],
         ];
         $products = $this->paginate($this->Products);
 
@@ -36,7 +36,7 @@ class ProductsController extends AppController
     public function view($id = null)
     {
         $product = $this->Products->get($id, [
-            'contain' => ['Sellers', 'Tags', 'Carts'],
+            'contain' => ['Sellers', 'ProductTypes', 'Tags', 'Carts','Images'],
         ]);
 
         $this->set(compact('product'));
@@ -59,11 +59,10 @@ class ProductsController extends AppController
             }
             $this->Flash->error(__('The product could not be saved. Please, try again.'));
         }
-        $sellers = $this->Products->Sellers->find('list', [
-            'limit' => 200,
-            'valueField' => 'full_name_email']);
+        $sellers = $this->Products->Sellers->find('list', ['limit' => 200]);
+        $productTypes = $this->Products->ProductTypes->find('list', ['limit' => 200]);
         $tags = $this->Products->Tags->find('list', ['limit' => 200]);
-        $this->set(compact('product', 'sellers', 'tags'));
+        $this->set(compact('product', 'sellers', 'productTypes', 'tags'));
     }
 
     /**
@@ -87,11 +86,10 @@ class ProductsController extends AppController
             }
             $this->Flash->error(__('The product could not be saved. Please, try again.'));
         }
-        $sellers = $this->Products->Sellers->find('list', [
-            'limit' => 200,
-            'valueField' => 'full_name_email']);
+        $sellers = $this->Products->Sellers->find('list', ['limit' => 200]);
+        $productTypes = $this->Products->ProductTypes->find('list', ['limit' => 200]);
         $tags = $this->Products->Tags->find('list', ['limit' => 200]);
-        $this->set(compact('product', 'sellers', 'tags'));
+        $this->set(compact('product', 'sellers', 'productTypes', 'tags'));
     }
 
     /**
@@ -114,23 +112,24 @@ class ProductsController extends AppController
         return $this->redirect(['action' => 'index']);
     }
     
-    public function discover(){
-         $this->paginate = [
-            'contain' => ['Sellers'],
+    public function discover()
+    {
+        $this->paginate = [
+            'contain' => ['Sellers', 'ProductTypes'],
         ];
         $products = $this->paginate($this->Products);
 
         $this->set(compact('products'));
     }
     
-    public function show()
-    {
+    public function show($productType = 2){
+        
         $this->paginate = [
-            'contain' => ['Sellers'],
+            'contain' => ['Sellers', 'ProductTypes','Images'],
+            'conditions' =>['Products.product_type_id' => $productType],
         ];
         $products = $this->paginate($this->Products);
-
-        $this->set(compact('products'));
+        $this->set(compact('products',$productType));
     }
     
 }

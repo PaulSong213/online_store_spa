@@ -3,20 +3,20 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\ProductsTable;
+use App\Model\Table\ProductTypesTable;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\ProductsTable Test Case
+ * App\Model\Table\ProductTypesTable Test Case
  */
-class ProductsTableTest extends TestCase
+class ProductTypesTableTest extends TestCase
 {
     /**
      * Test subject
      *
-     * @var \App\Model\Table\ProductsTable
+     * @var \App\Model\Table\ProductTypesTable
      */
-    protected $Products;
+    protected $ProductTypes;
 
     /**
      * Fixtures
@@ -24,11 +24,8 @@ class ProductsTableTest extends TestCase
      * @var array
      */
     protected $fixtures = [
-        'app.Products',
-        'app.Sellers',
         'app.ProductTypes',
-        'app.Carts',
-        'app.Tags',
+        'app.Products',
     ];
 
     /**
@@ -39,8 +36,8 @@ class ProductsTableTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $config = $this->getTableLocator()->exists('Products') ? [] : ['className' => ProductsTable::class];
-        $this->Products = $this->getTableLocator()->get('Products', $config);
+        $config = $this->getTableLocator()->exists('ProductTypes') ? [] : ['className' => ProductTypesTable::class];
+        $this->ProductTypes = $this->getTableLocator()->get('ProductTypes', $config);
     }
 
     /**
@@ -50,7 +47,7 @@ class ProductsTableTest extends TestCase
      */
     public function tearDown(): void
     {
-        unset($this->Products);
+        unset($this->ProductTypes);
 
         parent::tearDown();
     }
@@ -61,16 +58,6 @@ class ProductsTableTest extends TestCase
      * @return void
      */
     public function testValidationDefault(): void
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test buildRules method
-     *
-     * @return void
-     */
-    public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }

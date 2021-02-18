@@ -23,16 +23,12 @@
                     <td><?= h($product->name) ?></td>
                 </tr>
                 <tr>
-                    <th><?= __('Primary Image Url') ?></th>
-                    <td><?= h($product->primary_image_url) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Secondary Image Urls') ?></th>
-                    <td><?= h($product->secondary_image_urls) ?></td>
-                </tr>
-                <tr>
                     <th><?= __('Seller') ?></th>
-                    <td><?= $product->has('seller') ? $this->Html->link($product->seller->id, ['controller' => 'Sellers', 'action' => 'view', $product->seller->id]) : '' ?></td>
+                    <td><?= $product->has('seller') ? $this->Html->link($product->seller->email, ['controller' => 'Sellers', 'action' => 'view', $product->seller->id]) : '' ?></td>
+                </tr>
+                <tr>
+                    <th><?= __('Product Type') ?></th>
+                    <td><?= $product->has('product_type') ? $this->Html->link($product->product_type->name, ['controller' => 'ProductTypes', 'action' => 'view', $product->product_type->id]) : '' ?></td>
                 </tr>
                 <tr>
                     <th><?= __('Id') ?></th>
@@ -124,6 +120,39 @@
                                 <?= $this->Html->link(__('View'), ['controller' => 'Carts', 'action' => 'view', $carts->id]) ?>
                                 <?= $this->Html->link(__('Edit'), ['controller' => 'Carts', 'action' => 'edit', $carts->id]) ?>
                                 <?= $this->Form->postLink(__('Delete'), ['controller' => 'Carts', 'action' => 'delete', $carts->id], ['confirm' => __('Are you sure you want to delete # {0}?', $carts->id)]) ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </table>
+                </div>
+                <?php endif; ?>
+            </div>
+            <div class="related">
+                <h4><?= __('Related Images') ?></h4>
+                <?php if (!empty($product->images)) : ?>
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <th><?= __('Id') ?></th>
+                            <th><?= __('File Name') ?></th>
+                            <th><?= __('File Root') ?></th>
+                            <th><?= __('Product Id') ?></th>
+                            <th><?= __('File Size Kb') ?></th>
+                            <th><?= __('File Type') ?></th>
+                            <th class="actions"><?= __('Actions') ?></th>
+                        </tr>
+                        <?php foreach ($product->images as $images) : ?>
+                        <tr>
+                            <td><?= h($images->id) ?></td>
+                            <td><?= h($images->file_name) ?></td>
+                            <td><?= h($images->file_root) ?></td>
+                            <td><?= h($images->product_id) ?></td>
+                            <td><?= h($images->file_size_kb) ?></td>
+                            <td><?= h($images->file_type) ?></td>
+                            <td class="actions">
+                                <?= $this->Html->link(__('View'), ['controller' => 'Images', 'action' => 'view', $images->id]) ?>
+                                <?= $this->Html->link(__('Edit'), ['controller' => 'Images', 'action' => 'edit', $images->id]) ?>
+                                <?= $this->Form->postLink(__('Delete'), ['controller' => 'Images', 'action' => 'delete', $images->id], ['confirm' => __('Are you sure you want to delete # {0}?', $images->id)]) ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>
