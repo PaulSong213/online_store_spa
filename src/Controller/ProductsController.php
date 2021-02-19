@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Controller;
-
+use Cake\ORM\TableRegistry;
 /**
  * Products Controller
  *
@@ -122,14 +122,35 @@ class ProductsController extends AppController
         $this->set(compact('products'));
     }
     
-    public function show($productType = 2){
+    public function show($productTypeId = 0){
         
-        $this->paginate = [
-            'contain' => ['Sellers', 'ProductTypes','Images'],
-            'conditions' =>['Products.product_type_id' => $productType],
-        ];
+        $requestedProductType = "allProducts";
+        
+        if($productTypeId > 0){
+            $this->paginate = [
+                'contain' => ['Sellers', 'ProductTypes','Images'],
+                'conditions' =>['Products.product_type_id' => $productTypeId],
+            ];
+            
+            // Prior to 3.6 use TableRegistry::get('Articles')
+            $productTypes = TableRegistry::getTableLocator()->get('ProductTypes');
+
+            // Start a new query.
+            $query = $productTypes
+                ->find()
+                ->select(['name'])
+                ->where(['id' => $productTypeId])
+                ->toList();
+
+            $requestedProductType = lcfirst(ucwords(str_replace(" ", "", $query[0]->name)));
+        }else{
+            $this->paginate = [
+                'contain' => ['Sellers', 'ProductTypes','Images'],
+            ];
+        }
+        
         $products = $this->paginate($this->Products);
-        $this->set(compact('products',$productType));
+        $this->set(compact('products','requestedProductType'));
     }
     
 }

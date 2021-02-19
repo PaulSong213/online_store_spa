@@ -19,7 +19,6 @@ class ProductTypesController extends AppController
     public function index()
     {
         $productTypes = $this->paginate($this->ProductTypes);
-
         $this->set(compact('productTypes'));
     }
 

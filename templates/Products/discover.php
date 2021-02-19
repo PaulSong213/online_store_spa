@@ -25,14 +25,16 @@
         :id="product.id"
         :name="product.name"
         :description="product.description"
-        :base-price="product.price"
-        :discounted-price="product.discount_percentage"
+        :base-price="product.basePrice"
+        :discounted-price="product.discountedPrice"
+        :discount-percentage="product.discountPercentage"
         :description="product.description"
         :quantity="product.quantity"
-        :sold="product.sold"
-        :warranty="product.warranty_day"
-        :is-available="product.is_available"
+        :sold="product.soldQuantity"
+        :warranty="product.warrantyDay"
+        :is-available="product.isAvailable"
         :product-tags="productTags"
+        :image-paths="product.imagesPath"
         >
         </thumbnail-card>
     </div>
@@ -45,17 +47,22 @@
     const vm = Vue.createApp({
         data() {
             return {
-                products: <?= json_encode($products) ?>,
+                products: null,
                 tags: null,
-                productTags: null
+                productTags: null,
+                test: null
             }
         },
         mounted(){
             addTagList(),
+            addBestSellerProducts(),
             addProductTags()
         },
         unmounted(){
             
+        },
+        beforeCreate(){
+           
         }
     })
     vm.component('thumbnail-card', {
@@ -68,20 +75,15 @@
                 infoButtonLogoPosition: "",
                 textsState: "",
                 descriptionState: "max-height: 15rem; transition: ease-in 350ms",
-                sliderImages: [
-                    "/img/products/p5.jpg",
-                    "/img/products/p2.jpg",
-                    "/img/products/p3.jpg",
-                    "/img/products/p4.jpg",
-                    "/img/products/p1.jpg"
-                ],
+                
                 currentImageIndex: 0,
-                imageEffect: ""
+                imageEffect: "",
+                isSliderMoved: false
             }
         },
         
-        props: ['id','name','basePrice','discountedPrice','description','quantity',
-            'sold','warranty','isAvailable','productTags'],
+        props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
+            'sold','warranty','isAvailable','productTags','description','imagePaths'],
         template: 
           `
             <div class="item-container">
@@ -91,14 +93,14 @@
                 </div>
                 <div class="images-container">
                     <div class="item-image-slider" :class="imageEffect" style="height:40vh">
-                        <section v-for="(el, index) in sliderImages">
+                        <section v-for="(el, index) in imagePaths">
                             <img
                             v-if="index === currentImageIndex"    
-                            :src="sliderImages[index]" 
+                            :src="imagePaths[index]" 
                             class="product-image bg-black fade-in-out"/>
                             <img
-                            v-else   
-                            :src="sliderImages[index]" 
+                            v-else-if="isSliderMoved"   
+                            :src="imagePaths[index]" 
                             class="product-image bg-black hidden"/>        
                         </section>
                     </div>
@@ -116,11 +118,12 @@
                         <h4 class="name-product" :class="textsState" >{{name}}</h4>
 
                         <span class="price-product ">
-                        <s class="text-gray-500 text-lg">
-                            {{ isDiscounted(basePrice,discountedPrice) }} </s>    
+                        <s class="text-gray-500 text-lg"
+                            v-if="discountPercentage > 0">
+                            {{ "$" + basePrice }} </s>    
                         <h2 class="text-green-600 font-bold tracking-wide text-2xl 
                             md:text-xl lg:text-2xl">
-                            {{ computeDiscount(basePrice,discountedPrice) }} </h2>     
+                            {{ "$" + discountedPrice }} </h2>     
                         </span>
 
                         <section class="actions-product">
@@ -162,7 +165,11 @@
                         <div class="info-container">
                         <h5 class="info-text"><span class="info-title">Available: </span>{{quantity}} items</h5>
                         <h5 class="info-text"><span class="info-title">Sold: </span>{{sold}} items</h5>    
-                        <h5 class="info-text"><span class="info-title">Warranty: </span>{{warranty}} days</h5>
+                        <h5 class="info-text">
+                            <span class="info-title">Warranty: </span>{{warranty}}
+                            <span v-if="warranty > 1"> days</span>
+                            <span v-else> day</span>
+                        </h5>
                         <h5 class="info-text" v-if="areTagsLoaded">
                             <span class="info-title">
                             Tags: </span>
@@ -180,18 +187,7 @@
             </div>    
           `,
         methods:{
-            computeDiscount(basePrice, discountPercentage){
-                var decimalValueOfPercent = discountPercentage / 100;
-                var discountPrice = basePrice * decimalValueOfPercent;
-                var discountedBasePrice = "$" + (basePrice - discountPrice).toFixed(2);
-                return  discountedBasePrice;
-            },
-            isDiscounted(basePrice, discountPercentage){
-                if(discountPercentage > 0){
-                    return "$" + basePrice;
-                }
-                return "";
-            },
+            
             moreInfoToggle(){
                 if(!this.areTagsLoaded){
                     this.areTagsLoaded = true;
@@ -212,8 +208,10 @@
                     this.descriptionState = "max-height: 15rem; transition: ease-out 350ms";
                     this.isMoreInfoOpened = true;
                 }
+                this.isSliderMoved = true;
             },
             changeSliderImageToNextImage(toNextImage = true){
+                this.isSliderMoved = true;
                 if(toNextImage){
                     this.currentImageIndex++;
                 }else{
@@ -226,7 +224,7 @@
         },
         computed: {
             totalImages(){
-                return this.totalImages = this.sliderImages.length - 1;
+                return this.totalImages = this.imagePaths.length - 1;
             }
         },
         
@@ -261,13 +259,17 @@
         });
     }
     
-    $.ajax({
-        url: '/products/show/1',
-            type: 'get',
-            success: function(data) {
-              var result = JSON.parse(data);
-              console.log(result);
+    function addBestSellerProducts(){
+        $.ajax({
+            url: '/products/show/1',
+                type: 'get',
+                success: function(data) {
+                var result = JSON.parse(data);
+                console.log(result);
+                discoverInstace.products = result.bestSellers;
+                console.log(discoverInstace.products);
             }  
         });
+    }
     
 </script>
