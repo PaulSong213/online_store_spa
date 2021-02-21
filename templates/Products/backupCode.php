@@ -87,4 +87,46 @@
     });
     }
     
+    function addTagList(){
+        $.ajax({
+            url: '/tags/show',
+            type: 'get',
+            success: function(data) {
+              var result = JSON.parse(data);
+              discoverInstance.tags = result;
+            }  
+        });
+    }
+    
+    function addProductTags(){
+        $.ajax({
+            url: '/products-tags/show',
+            type: 'get',
+            success: function(data) {
+              var result = JSON.parse(data);
+              discoverInstance.productTags = result;
+            }  
+        });
+    }
+    
+    function addBestSellerProducts(){
+        $.ajax({
+            url: '/products/show/1',
+            type: 'get',
+            success: function(data) {
+                if(data){
+                   var result = JSON.parse(data);
+                   //console.log(result);
+                   let bestSellerProducts = result.bestSellers
+                   for(var i = 0; i < bestSellerProducts.length; i++){
+                       discoverInstance.bestSellerProducts.push(bestSellerProducts[i]);
+                   }
+                   discoverInstance.bestSellerNextPage = result.nextPageUrl;
+                   discoverInstance.bestSellerPrevPage = result.previousPageUrl;
+                   discoverInstance.bestSellerTitle = result.requestedProductTypeName;
+                }
+            }  
+        });
+    }
+    
 </script>    

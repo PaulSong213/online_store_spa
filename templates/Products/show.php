@@ -9,47 +9,68 @@
 //print_r(json_encode($products));
 
 //echo "<br><br><br><br><br>";
-$listProduct = [];
-
-
-foreach ($products as $product) {
+if($isPageHasData){
     
-    $listImages = [];
-    foreach ($product->images as $images ) {
-        $listImages[] = $images->file_root.$images->file_name;
+    $pageInformation = $this->Paginator->counter(__('Page {{page}} of {{pages}},'
+            . ' showing {{current}} record(s) out of {{count}} total'));
+    
+    $nextPageLink = "";
+    $previousPageLink = "";
+    
+    if($this->Paginator->hasNext()){
+        $nextPageLink = $this->FormatLink->rawUrl($this->Paginator->next());
+    }
+    if($this->Paginator->hasPrev()){
+        $previousPageLink = $this->FormatLink->rawUrl($this->Paginator->prev());
     }
     
-    $listProduct[] = array(
-        'id' => $product->id,
-        'name' => $product->name,
-        'basePrice' => $product->price,
-        'discountedPrice' => $this->Calculate->discountedPrice($product->price,$product->discount_percentage),
-        'discountPercentage' => $product->discount_percentage,
-        'description' => $product->description,
-        'isAvailable' => $this->Boolean->plain($product->is_available),
-        'availableQuantity' => $product->quantity,
-        'soldQuantity' => $product->sold,
-        'warrantyDay' => $product->warranty_day,
-        'pubslishedAt' => $product->created,
-        'imagesPath' => $listImages,
-        'productType' => array(
-                'id' => $product->product_type->id,
-                'name' => $product->product_type->name,
-                'description' => $product->product_type->description,
-            ),
-        'seller' => array(
-                'id' => $product->seller->id,
-                'firstName' => $product->seller->first_name,
-                'middleName' => $product->seller->middle_name,
-                'lastName' => $product->seller->last_name,
-                'email' => $product->seller->email,
-                'gender' => $this->Gender->formatToText($product->seller->gender),
-                'address' => $product->seller->address,
-                'accountTypeId' => $product->seller->account_type_id,
-            )
-        );
-}
+    $listProduct = [];
+    
+    foreach ($products as $product) {
+    
+        $listImages = [];
+        foreach ($product->images as $images ) {
+            $listImages[] = $images->file_root.$images->file_name;
+        }
 
-$items = array($requestedProductType => $listProduct);
+        $listProduct[] = array(
+            'id' => $product->id,
+            'name' => $product->name,
+            'basePrice' => $product->price,
+            'discountedPrice' => $this->Calculate->discountedPrice($product->price,$product->discount_percentage),
+            'discountPercentage' => $product->discount_percentage,
+            'description' => $product->description,
+            'isAvailable' => $this->Boolean->plain($product->is_available),
+            'availableQuantity' => $product->quantity,
+            'soldQuantity' => $product->sold,
+            'warrantyDay' => $product->warranty_day,
+            'pubslishedAt' => $product->created,
+            'imagesPath' => $listImages,
+            'productType' => array(
+                    'id' => $product->product_type->id,
+                    'name' => $product->product_type->name,
+                    'description' => $product->product_type->description,
+                ),
+            'seller' => array(
+                    'id' => $product->seller->id,
+                    'firstName' => $product->seller->first_name,
+                    'middleName' => $product->seller->middle_name,
+                    'lastName' => $product->seller->last_name,
+                    'email' => $product->seller->email,
+                    'gender' => $this->Gender->formatToText($product->seller->gender),
+                    'address' => $product->seller->address,
+                    'accountTypeId' => $product->seller->account_type_id,
+                )
+            );
+    }
+
+$requestedProductType = lcfirst(ucwords(str_replace(" ", "", $requestedProductTypeName)));
+    
+$items = array($requestedProductType => $listProduct,'nextPageUrl' => $nextPageLink,
+    'previousPageUrl' => $previousPageLink, 'pageInformation' => $pageInformation,
+    'requestedProductTypeName' => $requestedProductTypeName);
 
 print_r(json_encode($items));
+}
+
+?>

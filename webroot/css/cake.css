@@ -1,4 +1,13 @@
 
+.open-tab{
+    animation: open-to-up 250ms ease-out;
+}
+
+.close-tab{
+    animation-direction: reverse;
+    animation: open-to-up 250ms ease-in-out;
+}
+
 .fade-in{
     animation-name: fade-left;
     animation-duration: 250ms;
@@ -7,6 +16,11 @@
 .fade-in-out{
     animation-name:flash-in-out;
     animation-duration: 250ms;
+}
+
+@keyframes open-to-up{
+    0%   {height: 0;}
+    100% {height: 100%;}
 }
 
 @keyframes fade-left{

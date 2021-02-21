@@ -39,6 +39,7 @@ class AppView extends View
     {
         parent::initialize();
         $this->loadHelper('Gender');
-         $this->loadHelper('Boolean');
+        $this->loadHelper('Boolean');
+        $this->loadHelper('FormatLink');
     }
 }
