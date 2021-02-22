@@ -11,6 +11,23 @@ and open the template in the editor.
 @tailwind base;
 @tailwind components;
 
+.close-tab-button{
+    @apply  border border-gray-300 border-opacity-0 hover:text-white
+        hover:border-opacity-100 hover:shadow-xl hover:bg-gray-800 
+        transition-all p-1 rounded-full text-5xl text-gray-700 
+        font-bold  cursor-pointer;
+}
+
+.load-more-button{
+    @apply  px-5 py-3 border border-gray-600 w-max mx-auto my-3 cursor-pointer
+            hover:bg-gray-700 hover:text-gray-100 rounded-sm transition-colors
+            text-2xl;
+}
+
+.text-loader{
+    @apply w-full bg-gray-300 h-5 my-4 animate-pulse rounded-full;
+}
+
 .header-discover{
     @apply  flex justify-between flex-col-reverse md:flex-row my-5;
 }

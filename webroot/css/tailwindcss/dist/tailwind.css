@@ -598,6 +598,101 @@ video {
   }
 }
 
+.close-tab-button:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+}
+
+.close-tab-button {
+  --tw-border-opacity: 1;
+  border-color: rgba(209, 213, 219, var(--tw-border-opacity));
+  --tw-border-opacity: 0;
+}
+
+.close-tab-button:hover {
+  --tw-border-opacity: 1;
+}
+
+.close-tab-button {
+  border-radius: 9999px;
+  border-width: 1px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 3rem;
+  line-height: 1;
+  padding: 0.25rem;
+}
+
+.close-tab-button:hover {
+  --tw-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.close-tab-button {
+  --tw-text-opacity: 1;
+  color: rgba(55, 65, 81, var(--tw-text-opacity));
+}
+
+.close-tab-button:hover {
+  --tw-text-opacity: 1;
+  color: rgba(255, 255, 255, var(--tw-text-opacity));
+}
+
+.close-tab-button {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.load-more-button:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgba(55, 65, 81, var(--tw-bg-opacity));
+}
+
+.load-more-button {
+  --tw-border-opacity: 1;
+  border-color: rgba(75, 85, 99, var(--tw-border-opacity));
+  border-radius: 0.125rem;
+  border-width: 1px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.load-more-button:hover {
+  --tw-text-opacity: 1;
+  color: rgba(243, 244, 246, var(--tw-text-opacity));
+}
+
+.load-more-button {
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.text-loader{
+  --tw-bg-opacity: 1;
+  background-color: rgba(209, 213, 219, var(--tw-bg-opacity));
+  border-radius: 9999px;
+  height: 1.25rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  -webkit-animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 .header-discover{
   display: flex;
   flex-direction: column-reverse;
