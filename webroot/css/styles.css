@@ -11,6 +11,106 @@ and open the template in the editor.
 @tailwind base;
 @tailwind components;
 
+
+.prod-description{
+    @apply text-2xl text-gray-600;
+}
+
+.prod-card-sec-info{
+    @apply col-span-full md:col-span-3;
+}
+
+.prod-action-cart{
+    @apply text-gray-900 cursor-pointer font-black py-3 md:py-5 px-5 md:px-10 border-2
+        tracking-wider transition-all border-gray-700 hover:bg-yellow-100                             
+        hover:text-black hover:border-white text-xl;                             
+}
+
+.prod-action-buy{
+    @apply text-gray-900 cursor-pointer font-black py-3 md:py-5 px-5 md:px-10 border-2
+        tracking-wider transition-all border-gray-700 hover:bg-yellow-100                               
+        hover:text-black hover:border-white text-xl;                              
+}
+
+.prod-action-container{
+    @apply  flex justify-around;
+}
+
+.prod-discount-percentage{
+    @apply text-lg md:text-xl my-auto bg-red-800 text-gray-100 py-2 px-4;
+}
+
+.prod-discounted-price{
+    @apply text-5xl md:text-6xl mx-5 text-black;
+}
+
+.prod-base-price{
+    @apply text-lg md:text-2xl my-auto text-red-600;
+}
+
+.prod-title{
+    @apply text-3xl text-left tracking-wider text-gray-800 font-normal text-center;
+}
+
+.prod-card-main-info{
+    @apply col-span-full md:col-span-7 ;
+}
+
+.prod-card-information-container{
+    @apply  grid grid-cols-1 md:grid-cols-10  mt-5 gap-10 md:gap-5;
+}
+
+.prod-card-sec-image{
+    @apply h-full md:w-full md:h-auto object-cover m-auto transition-all 
+        bg-yellow-800 transform hover:scale-105;                             
+}
+
+.prod-card-sec-image-container{
+    @apply h-full max-w-lg overflow-hidden inline-block md:h-auto 
+        md:mx-2 md:block  cursor-pointer transition-all md:w-full mb-2 mr-1;              
+}
+
+.prod-card-list-image-container{
+    @apply overflow-x-auto overflow-y-hidden md:overflow-y-auto md:overflow-x-hidden
+        md:px-5 py-3 relative h-1/5 md:h-full md:col-span-3;                     
+}
+
+.prod-card-main-image{
+    @apply relative max-h-full block w-auto m-auto self-center bg-yellow-800;
+}
+
+.prod-card-main-image-container{
+    @apply relative h-4/5 md:h-full  md:col-span-7 overflow-hidden flex flex-col
+        justify-center;
+}
+
+.prod-card-on-tab-container{
+    @apply md:grid md:grid-cols-10 overflow-hidden gap-10 lg:gap-20
+        bg-yellow-900 px-4 py-8;
+}
+
+.normal-prod-card-on-tab{
+    @apply p-2 bg-yellow-50;
+}
+
+.normal-prod-discounted-price{
+    @apply my-5 text-4xl text-blue-600 text-center font-bold tracking-wider;
+}
+
+.normal-prod-discount{
+    @apply  inline ml-2 text-xl;
+}
+
+.normal-prod-base-price{
+    @apply  inline text-xl;
+}
+
+.normal-prod-card{
+    @apply overflow-hidden cursor-pointer hover:shadow-lg
+        border border-blue-200 border-opacity-0 hover:border-opacity-100
+         transition-all rounded-md;
+}
+
 .close-tab-button{
     @apply  border border-gray-300 border-opacity-0 hover:text-white
         hover:border-opacity-100 hover:shadow-xl hover:bg-gray-800 

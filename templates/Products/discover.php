@@ -26,7 +26,7 @@
         
         <featured-product-loader v-if="!isBestSellerThumbnailCreated"></featured-product-loader>
         <featured-product-loader v-if="!isBestSellerThumbnailCreated"></featured-product-loader>
-        <div class="mt-20 grid grids-col-1 gap-10"> 
+        <div class="mt-20 grid grid-cols-1 gap-10"> 
             
             <featured-product-card
             v-for="product in bestSellerProductsThumbnail"
@@ -55,20 +55,12 @@
         </h4>
     </div>
     
-    <div class="discover-products content my-10">
-        <div class="header-title mt-0">
-            <h1 class="my-auto font-medium" style="margin-right: 1.5vw">
-                Discover
-            </h1>
-            <h6 class="my-auto font-bold text-xl text-gray-500"
-            v-if="bestSellerTitle">FIND</h6>
-        </div>
-        
-        
-        <div class="mt-20 grid grids-col-1 gap-10"> 
-            
-            <featured-product-card
-            v-for="product in bestSellerProductsThumbnail"
+    
+<!--    NORMAL PRODUCT  -->
+    <div class="normal-products content my-10">
+        <div class="mt-20 grid grid-cols-3 gap-5"> 
+            <normal-product-card
+            v-for="product in normalProduct"
             :key="product.id"
             :id="product.id"
             :name="product.name"
@@ -82,13 +74,16 @@
             :is-available="product.isAvailable"
             :product-tags="productTags"
             :image-paths="product.imagesPath"
-            :next-page="bestSellerNextPage"
+            v-on:click="toggleInlineTab(true,'','normal-product-on-tab',product)"
             >
-            </featured-product-card>
+            </normal-product-card>
+            
+            
+            
         </div>
-        
     </div>
     
+<!--    INLINE TAB -->
     <div class="inline-tab fixed bg-white w-full h-full border-2 border-gray-300 
         bottom-0 left-2/4 shadow-2xl rounded-t-3xl overflow-hidden"
         :class="inlineTabAnimation"
@@ -107,7 +102,7 @@
         </div>
         
         <div class="tab-content p-10 h-full overflow-auto small-scroll"
-             id="tab-content-container"
+             
              v-if="inlineTabContentComponent === 'featured-product-card'"
              v-on:scroll.passive="addBestSellerProduct(bestSellerNextPage)">
             <keep-alive>
@@ -123,7 +118,7 @@
                             basePrice : product.basePrice,
                             discountedPrice : product.discountedPrice,
                             discountPercentage : product.discountPercentage,
-                            quantity : product.quantity,
+                            quantity : product.availableQuantity,
                             sold : product.soldQuantity,
                             warranty : product.warrantyDay,
                             isAvailable : product.isAvailable,
@@ -144,6 +139,36 @@
             </keep-alive>
         </div>
         
+        <div class="tab-content p-10 h-full overflow-auto small-scroll"
+             v-if="inlineTabContentComponent === 'normal-product-on-tab'"
+             >
+           
+           <keep-alive>
+                <div class="items-discover grid grids-col-1 gap-10 py-10 mb-10">
+<!--                    props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
+            'sold','warranty','isAvailable','productTags','description','imagePaths'],-->
+                    <component
+                        :is=" 'normal-product-on-tab' "
+                        v-bind="{ 
+                            key : inlineTabNormalProduct.id,
+                            id : inlineTabNormalProduct.id,
+                            name : inlineTabNormalProduct.name,
+                            description : inlineTabNormalProduct.description,
+                            basePrice : inlineTabNormalProduct.basePrice,
+                            discountedPrice : inlineTabNormalProduct.discountedPrice,
+                            discountPercentage : inlineTabNormalProduct.discountPercentage,
+                            quantity : inlineTabNormalProduct.availableQuantity,
+                            sold : inlineTabNormalProduct.soldQuantity,
+                            warranty : inlineTabNormalProduct.warrantyDay,
+                            isAvailable : inlineTabNormalProduct.isAvailable,
+                            imagePaths : inlineTabNormalProduct.imagesPath,
+                            productTags : productTags
+                        }"
+                    ></component>
+                </div>    
+            </keep-alive>
+        </div>
+        
     </div>
 </div>
 
@@ -155,7 +180,6 @@
     const vm = Vue.createApp({
         data() {
             return {
-                test : false,
                 bestSellerTitle: null,
                 bestSellerProducts: Array(),
                 bestSellerProductsThumbnail: Array(),
@@ -168,22 +192,29 @@
                 inlineTabTitle: null,
                 inlineTabContentComponent: null,
                 addingNewItem : false,
-                isBestSellerThumbnailCreated : false
+                isBestSellerThumbnailCreated : false,
+                normalProduct: Array(),
+                inlineTabNormalProduct : null
             }
         },
         mounted(){
             this.addTagList(),
             this.addBestSellerProduct('/products/show/1', true),
+            this.addNormalProduct(),
             this.addProductTags()
         },
                                    
         methods:{
-            toggleInlineTab(willOpen = true,tabTitle, tabContent = null){
+            toggleInlineTab(willOpen = true,tabTitle, tabComponentContent = null,
+                tabProductContent = null){
                 if(willOpen){
                     this.isInlineTabOpen = true;
                     this.inlineTabAnimation = "open-tab";
-                    if(tabContent === 'featured-product-card'){
+                    if(tabComponentContent === 'featured-product-card'){
                        this.addBestSellerProduct(this.bestSellerNextPage);
+                    }
+                    if(tabComponentContent === 'normal-product-on-tab'){
+                       this.inlineTabNormalProduct = tabProductContent;
                     }
                 }else{
                     this.isInlineTabOpen = false;
@@ -191,15 +222,23 @@
                 }
                 if(tabTitle){this.inlineTabTitle = tabTitle;}
                 
-                if(tabContent){this.inlineTabContentComponent = tabContent}
+                if(tabComponentContent){this.inlineTabContentComponent = tabComponentContent}
                 
+            },
+            async addNormalProduct(page = '/products/show/2'){
+                let response = await $.get(page,function(data){return data });
+                let data = JSON.parse(response);
+                let product = data.product;
+                for(var i = 0; i < product.length; i++){
+                    this.normalProduct.push(product[i]);
+                }
             },
             async addBestSellerProduct(page = '/products/show/1',isThumbnailOnCreate = false){
                 if(!this.addingNewItem && this.bestSellerNextPage !== ""){
                     this.addingNewItem = true;
                     let response = await $.get(page,function(data){return data });
                     let data = JSON.parse(response);
-                    let product = data.bestSellers;
+                    let product = data.product;
                     let bestSellerData = this.bestSellerProducts;
                     if(isThumbnailOnCreate){bestSellerData = this.bestSellerProductsThumbnail;}
                     for(var i = 0; i < product.length; i++){
@@ -225,7 +264,109 @@
     })
     vm.component('featured-product-loader',featuredProductLoader),
     vm.component('circle-loader',circleLoader),
-    vm.component('reached-end-message',reachedEndMessage),        
+    vm.component('reached-end-message',reachedEndMessage),
+    vm.component('normal-product-on-tab',{
+        props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
+            'sold','warranty','isAvailable','productTags','description','imagePaths','productTags'],
+        template:
+            `
+            <div class="normal-prod-card-on-tab">
+                <div class="prod-card-on-tab-container"
+                     style="height: 50vh;">
+                    <section  class="prod-card-main-image-container">
+                        <img :src="imagePaths[0]" class="prod-card-main-image"
+                             />
+                    </section>
+                    <section class="prod-card-list-image-container small-scroll">
+                        <div class="whitespace-nowrap h-full md:h-auto max-w-xs">
+                            
+                            <div class="prod-card-sec-image-container select-false"
+                                v-for="(el, index) in imagePaths">
+                                <img :src="imagePaths[index]" class="prod-card-sec-image" 
+                                  />
+                            </div>
+                            
+                        </div>
+                    </section> 
+                </div>
+                <div class="prod-card-information-container">
+                    <section class="prod-card-main-info">
+                        <div class="bg-yellow-300 p-4 flex justify-start
+                             flex-col" style="max-height: fit-content">
+                            <div>
+                                <h3 class="prod-title">{{name}}</h3>
+                            </div>
+                            <div class="flex justify-center my-3">
+                                <s class="prod-base-price">{{'$' + basePrice}}</s>
+                                <h4 class="prod-discounted-price">{{'$' + discountedPrice}}</h4>
+                                <h6 class="prod-discount-percentage">{{discountPercentage + '%'}}</h6>
+                            </div>
+
+                            <div class="prod-action-container">
+                                <h5  class="prod-action-buy select-false">BUY NOW</h5>
+                                <h5  class="prod-action-cart select-false">
+                                    <ion-icon name="cart-outline"class="text-2xl transform rotate-12">
+                                    </ion-icon>ADD TO CART
+                                </h5>       
+                            </div>
+                        </div>
+                    </section> 
+                    <section class="prod-card-sec-info">
+                        <h4 class="prod-description"><span class="text-gray-500">
+                            Available: </span> {{quantity + ' items'}} </h4>
+                        <h4 class="prod-description"><span class="text-gray-500">
+                            <span class="info-title">Warranty: </span>{{warranty}}
+                            <span v-if="warranty > 1"> days</span>
+                            <span v-else> day</span> </h4> 
+                        <h4 class="prod-description"><span class="text-gray-500">
+                            Sold: </span> {{sold + ' items'}} </h4>
+                        <h4 class="prod-description"><span class="text-gray-500">
+                            Tags: </span>
+                            <span
+                            v-for="productTag in productTags">
+                                <p v-if="productTag.productId === id"
+                                class="inline">
+                                    {{productTag.tagName + " "}}
+                                </p>        
+                            </span>        
+                        </h4>
+                        
+                        <h4 class="prod-description">{{description}} </h4>
+                    </section> 
+                </div>    
+            </div>
+            `
+    }),
+    vm.component('normal-product-card', {
+        props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
+            'sold','warranty','isAvailable','productTags','description','imagePaths'],
+        template:
+            `
+            <div class="normal-prod-card">
+                <div>
+                    <img :src="imagePaths[0]" class="rounded-md"/>
+                </div>
+                <div class="normal-prod-information p-2">
+                    <div class="product-title">
+                        <h3 class="name-product text-2xl text-left tracking-wider
+                            text-gray-600 font-normal">
+                        {{name}}
+                        </h3>
+                    </div>
+                    <div >
+                        <h4 class="normal-prod-discounted-price">{{'$'+discountedPrice}}</h4>
+                        <div class="flex justify-around my-0">
+                            <div>
+                                <s class="normal-prod-base-price">{{ '$' + basePrice}}</s>
+                                <h6 class="normal-prod-discount">{{discountPercentage + '%'}}</h6>
+                            </div>
+                            <h6 class="normal-prod-sold text-xl">{{sold}} sold</h6>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+            `,
+    }),
     vm.component('featured-product-card', {
         data(){
             return{
@@ -243,7 +384,7 @@
         },
         
         props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
-            'sold','warranty','isAvailable','productTags','description','imagePaths','nextPage'],
+            'sold','warranty','isAvailable','description','imagePaths','productTags'],
         template: 
           `
             <div class="item-container">
@@ -388,7 +529,7 @@
         },
         computed: {
             totalImages(){
-                return this.totalImages = this.imagePaths.length - 1;
+                return  this.imagePaths.length - 1;
             }
         },
         

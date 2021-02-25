@@ -63,10 +63,8 @@ if($isPageHasData){
                 )
             );
     }
-
-$requestedProductType = lcfirst(ucwords(str_replace(" ", "", $requestedProductTypeName)));
     
-$items = array($requestedProductType => $listProduct,'nextPageUrl' => $nextPageLink,
+$items = array("product" => $listProduct,'nextPageUrl' => $nextPageLink,
     'previousPageUrl' => $previousPageLink, 'pageInformation' => $pageInformation,
     'requestedProductTypeName' => $requestedProductTypeName);
 
