@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.3
+-- version 5.0.4
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 18, 2021 at 07:52 AM
--- Server version: 10.4.14-MariaDB
--- PHP Version: 7.2.34
+-- Generation Time: Mar 06, 2021 at 12:58 PM
+-- Server version: 10.4.17-MariaDB
+-- PHP Version: 7.4.15
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -93,6 +93,40 @@ INSERT INTO `carts` (`id`, `buyer_id`, `product_id`, `quantity`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `images`
+--
+
+CREATE TABLE `images` (
+  `id` int(11) NOT NULL,
+  `file_name` varchar(120) NOT NULL,
+  `file_root` varchar(120) NOT NULL,
+  `file_size_kb` int(11) NOT NULL,
+  `file_type` varchar(64) NOT NULL,
+  `product_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `images`
+--
+
+INSERT INTO `images` (`id`, `file_name`, `file_root`, `file_size_kb`, `file_type`, `product_id`) VALUES
+(1, 'p1.jpg', '/img/products/', 99, 'image', 3),
+(2, 'p2.jpg', '/img/products/', 99, 'image', 3),
+(3, 'p3.jpg', '/img/products/', 99, 'image', 4),
+(4, 'p5.jpg', '/img/products/', 99, 'image', 4),
+(5, 'p6.jpg', '/img/products/', 99, 'image', 3),
+(6, 'p7.jpg', '/img/products/', 99, 'image', 4),
+(7, 'p8.jpg', '/img/products/', 99, 'image', 3),
+(8, 'p9.jpg', '/img/products/', 99, 'image', 4),
+(9, 'p10.jpg', '/img/products/', 99, 'image', 5),
+(10, 'p11.jpg', '/img/products/', 99, 'image', 6),
+(11, 'p12.jpg', '/img/products/', 99, 'image', 5),
+(12, 'p13.jpg', '/img/products/', 99, 'image', 5),
+(13, 'p14.jpg', '/img/products/', 99, 'image', 6);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `products`
 --
 
@@ -100,8 +134,6 @@ CREATE TABLE `products` (
   `id` int(11) NOT NULL,
   `name` varchar(120) NOT NULL,
   `price` decimal(15,2) NOT NULL,
-  `primary_image_url` varchar(64) NOT NULL,
-  `secondary_image_urls` varchar(200) NOT NULL,
   `description` longtext DEFAULT NULL,
   `is_available` tinyint(4) NOT NULL DEFAULT 0,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -118,9 +150,11 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `name`, `price`, `primary_image_url`, `secondary_image_urls`, `description`, `is_available`, `created`, `modified`, `seller_id`, `quantity`, `sold`, `warranty_day`, `discount_percentage`, `product_type_id`) VALUES
-(3, 'Strong Morning Coffee Cup', '21.00', 'p1.jpg', 'none', 'PREMIUM POWDER COATING SURFACE: Powder coating allows you to hold the cup without slipping because of wet. It also allows you to hold it without worrying of possible harm from your hot drink inside the cup.', 1, '2021-02-11 11:58:10', '2021-02-12 03:55:42', 1, 12, 3, 31, '10.00', 0),
-(4, 'Glass Coffee Cup', '60.00', 'none', 'none', 'none', 0, '2021-02-12 02:43:48', '2021-02-12 02:43:48', 1, 21, 1, 1, '0.00', 0);
+INSERT INTO `products` (`id`, `name`, `price`, `description`, `is_available`, `created`, `modified`, `seller_id`, `quantity`, `sold`, `warranty_day`, `discount_percentage`, `product_type_id`) VALUES
+(3, 'Strong Morning Coffee Cup', '21.00', 'PREMIUM POWDER COATING SURFACE: Powder coating allows you to hold the cup without slipping because of wet. It also allows you to hold it without worrying of possible harm from your hot drink inside the cup.', 1, '2021-02-11 11:58:10', '2021-02-12 03:55:42', 1, 12, 3, 31, '10.00', 1),
+(4, 'Glass Coffee Cup', '60.00', 'none', 0, '2021-02-12 02:43:48', '2021-02-12 02:43:48', 1, 21, 1, 1, '0.00', 1),
+(5, 'Sledgers Mens Paulo Slip On (Black)', '299.00', ' Ortholite\r\n- Soft Step\r\n- Flex and Move\r\n- Perforated leather loafers made breathable for more comfortable drives. Made with a molded cup insoles for maximum comfort & mobility', 1, '2021-03-06 03:35:43', '2021-03-06 03:35:43', 1, 99, 10, 7, '10.00', 2),
+(6, 'Himalayan Salt Lamp with FREE 5ml Jade Essentials Roman Chamomile Essential Oil and 5ml Peppermint Essential OIl', '788.00', 'Product details of Himalayan Salt Lamp with FREE 5ml Jade Essentials Roman Chamomile Essential Oil and 5ml Peppermint Essential OIl\r\nPurifies the air\r\nActs as natural deodorizer\r\nCalms allergies and reduces asthma\r\nNeutralizes electromagnetic radiation\r\nIncreases blood flow\r\nEnhances sleep quality\r\nBoosts serotonin level\r\nImproves mood and concentration level\r\nIncreases energy level\r\nReduces stress', 1, '2021-03-06 03:37:54', '2021-03-06 03:37:54', 1, 99, 15, 7, '0.00', 2);
 
 -- --------------------------------------------------------
 
@@ -141,7 +175,11 @@ CREATE TABLE `products_tags` (
 INSERT INTO `products_tags` (`id`, `product_id`, `tag_id`) VALUES
 (1, 3, 1),
 (2, 4, 2),
-(3, 3, 2);
+(3, 3, 2),
+(4, 5, 2),
+(5, 6, 2),
+(6, 6, 3),
+(7, 5, 4);
 
 -- --------------------------------------------------------
 
@@ -154,6 +192,14 @@ CREATE TABLE `product_types` (
   `name` varchar(64) NOT NULL,
   `description` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `product_types`
+--
+
+INSERT INTO `product_types` (`id`, `name`, `description`) VALUES
+(1, 'Best Sellers', NULL),
+(2, 'Discover', NULL);
 
 -- --------------------------------------------------------
 
@@ -199,7 +245,9 @@ CREATE TABLE `tags` (
 
 INSERT INTO `tags` (`id`, `name`) VALUES
 (1, 'Ceramic'),
-(2, 'Glass');
+(2, 'Glass'),
+(3, 'Light'),
+(4, 'Apparel');
 
 --
 -- Indexes for dumped tables
@@ -227,11 +275,19 @@ ALTER TABLE `carts`
   ADD KEY `FK_cart_products` (`product_id`);
 
 --
+-- Indexes for table `images`
+--
+ALTER TABLE `images`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FK_product_images` (`product_id`);
+
+--
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `FK_sellers` (`seller_id`);
+  ADD KEY `FK_sellers` (`seller_id`),
+  ADD KEY `Fk_product_types` (`product_type_id`);
 
 --
 -- Indexes for table `products_tags`
@@ -283,22 +339,28 @@ ALTER TABLE `carts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `images`
+--
+ALTER TABLE `images`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `products_tags`
 --
 ALTER TABLE `products_tags`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `product_types`
 --
 ALTER TABLE `product_types`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `sellers`
@@ -310,7 +372,7 @@ ALTER TABLE `sellers`
 -- AUTO_INCREMENT for table `tags`
 --
 ALTER TABLE `tags`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -330,10 +392,17 @@ ALTER TABLE `carts`
   ADD CONSTRAINT `FK_cart_products` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
 
 --
+-- Constraints for table `images`
+--
+ALTER TABLE `images`
+  ADD CONSTRAINT `FK_product_images` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
+
+--
 -- Constraints for table `products`
 --
 ALTER TABLE `products`
-  ADD CONSTRAINT `FK_sellers` FOREIGN KEY (`seller_id`) REFERENCES `sellers` (`id`);
+  ADD CONSTRAINT `FK_sellers` FOREIGN KEY (`seller_id`) REFERENCES `sellers` (`id`),
+  ADD CONSTRAINT `Fk_product_types` FOREIGN KEY (`product_type_id`) REFERENCES `product_types` (`id`);
 
 --
 -- Constraints for table `products_tags`

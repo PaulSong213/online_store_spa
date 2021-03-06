@@ -58,9 +58,7 @@
     
 <!--    NORMAL PRODUCT  -->
     <div class="normal-products content my-10">
-        <div class="mt-20 grid grid-cols-2 md:grid-cols-3 
-             lg:grid-cols-4 gap-2">
-            
+        <div class="mt-20 grid grid-cols-3 gap-5"> 
             <normal-product-card
             v-for="product in normalProduct"
             :key="product.id"
@@ -79,6 +77,8 @@
             v-on:click="toggleInlineTab(true,'','normal-product-on-tab',product)"
             >
             </normal-product-card>
+            
+            
             
         </div>
     </div>
@@ -342,41 +342,26 @@
             'sold','warranty','isAvailable','productTags','description','imagePaths'],
         template:
             `
-            <div class="overflow-hidden cursor-pointer hover:shadow-lg 
-                transition-all flex flex-col justify-between
-                bg-yellow-300 p-0">
-                                    
+            <div class="normal-prod-card">
                 <div>
-                    <img :src="imagePaths[0]" class="rounded-none"/>
+                    <img :src="imagePaths[0]" class="rounded-md"/>
                 </div>
-                            
-                <div class="flex flex-col justify-between space-y-4 pt-2">
-                            
-                    <div class="px-2">
-                        <h3 class="table m-auto text-center text-lg md:text-xl  tracking-wider 
-                          text-gray-900 font-normal line-clamp-2 text-gray-900">
+                <div class="normal-prod-information p-2">
+                    <div class="product-title">
+                        <h3 class="name-product text-2xl text-left tracking-wider
+                            text-gray-600 font-normal">
                         {{name}}
                         </h3>
                     </div>
-                    
-                    <div>
-                         <h4 class="table m-auto text-center text-2xl md:text-3xl 
-                            font-bold text-gray-900 tracking-widest">{{'$'+discountedPrice}}</h4>           
-                    </div>
-                    
-                    <div  class="flex justify-between">
-                        <h6 class="table my-auto text-base md:text-lg line-through 
-                            decoration-bg-light"
-                            v-if="discountPercentage > 0">{{ '$' + basePrice}}</h6>
-                            
-                        <h6 class="table my-auto text-base md:text-lg discount-percentage-tag
-                            px-2 py-0"
-                            v-if="discountPercentage > 0">
-                            {{discountPercentage + '%'}}</h6>
-                            
-                        <h6 class="table my-auto text-base md:text-lg"
-                            >{{sold}} sold</h6>        
-                            
+                    <div >
+                        <h4 class="normal-prod-discounted-price">{{'$'+discountedPrice}}</h4>
+                        <div class="flex justify-around my-0">
+                            <div>
+                                <s class="normal-prod-base-price">{{ '$' + basePrice}}</s>
+                                <h6 class="normal-prod-discount">{{discountPercentage + '%'}}</h6>
+                            </div>
+                            <h6 class="normal-prod-sold text-xl">{{sold}} sold</h6>
+                        </div>
                     </div>
                 </div>    
             </div>

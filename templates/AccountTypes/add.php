@@ -4,7 +4,7 @@
  * @var \App\Model\Entity\AccountType $accountType
  */
 ?>
-<div class="row">
+<div class="rows">
     <aside class="column">
         <div class="side-nav">
             <h4 class="heading"><?= __('Actions') ?></h4>
