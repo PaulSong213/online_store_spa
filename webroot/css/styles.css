@@ -6,12 +6,29 @@ and open the template in the editor.
 /* 
     Created on : 15 Feb 2021, 2:21:38 pm
     Author     : songalia
+    NPX Install: npx tailwindcss-cli@latest build webroot/css/styles.css -c webroot/css/tailwindcss/tailwind.config.js  -o webroot/css/tailwindcss/dist/tailwind.css
 */
 
 @tailwind base;
+
+ion-icon{
+    margin-bottom: -2px;
+}
+
 @tailwind components;
 
+.discount-percentage-tag{
+   @apply bg-red-800 text-gray-100 py-2 px-4;
+}
 
+.btn-default{
+    @apply bg-yellow-300 hover:bg-red-900 text-gray-900 hover:text-gray-100
+        py-3 px-5 active:bg-yellow-300 active:text-gray-700 rounded-sm text-lg
+        table m-auto  cursor-pointer rounded-sm transition-colors select-none
+        border border-gray-500;
+}
+
+/*PENDING*/
 .prod-description{
     @apply text-2xl text-gray-600;
 }
@@ -97,19 +114,6 @@ and open the template in the editor.
     @apply my-5 text-4xl text-blue-600 text-center font-bold tracking-wider;
 }
 
-.normal-prod-discount{
-    @apply  inline ml-2 text-xl;
-}
-
-.normal-prod-base-price{
-    @apply  inline text-xl;
-}
-
-.normal-prod-card{
-    @apply overflow-hidden cursor-pointer hover:shadow-lg
-        border border-blue-200 border-opacity-0 hover:border-opacity-100
-         transition-all rounded-md;
-}
 
 .close-tab-button{
     @apply  border border-gray-300 border-opacity-0 hover:text-white
@@ -118,11 +122,7 @@ and open the template in the editor.
         font-bold  cursor-pointer;
 }
 
-.load-more-button{
-    @apply  px-5 py-3 border border-gray-600 w-max mx-auto my-3 cursor-pointer
-            hover:bg-gray-700 hover:text-gray-100 rounded-sm transition-colors
-            text-2xl;
-}
+
 
 .text-loader{
     @apply w-full bg-gray-300 h-5 my-4 animate-pulse rounded-full;
@@ -136,110 +136,19 @@ and open the template in the editor.
     @apply  bg-white flex mt-20 md:mt-0 ;
 }
 
-.header-tags{
-    @apply  text-justify w-full md:w-2/3 lg:w-2/4 opacity-70 hover:opacity-100 transition-all;
-}
 
-.discover-tag{
-    @apply  inline-block text-gray-600 my-0 cursor-pointer border 
-    border-black border-opacity-0 px-3 rounded-full transition-all hover:border-opacity-90
-    hover:bg-gray-900 hover:text-gray-100;
-}
 
-.item-container{
-    @apply grid grid-cols-1 sm:grid-cols-10 lg:grid-cols-3 gap-5 sm:gap-2 overflow-hidden;
-}
-
-.item-description{
-    @apply sm:col-span-full md:col-span-3 lg:col-span-1 h-full overflow-auto 
-        mx-10 md:mx-2 sm:mt-2 px-4 transition-all cursor-pointer transition-all 
-        row-start-3 sm:row-start-2 md:row-start-auto hidden sm:block self-center;
-}
-
-.desciption-text{
-    @apply  text-gray-500 text-justify w-full;
-}
-
-.images-container{
-    @apply  flex flex-col justify-center overflow-hidden sm:col-span-7 
-        md:col-span-5 lg:col-span-1 overflow-hidden sm:px-20 md:px-0 
-        row-start-1 md:row-start-auto relative;
-}
-
-.item-image-slider{
-    @apply  relative overflow-hidden;
-}
-
-.product-image {
-    @apply  block mx-auto w-auto rounded-sm   mb-auto h-full;
-}
-
-.image-navigate-forward {
-    @apply absolute inset-y-2/4 right-0 text-5xl shadow-xl text-gray-100 bg-gray-600 
-    cursor-pointer opacity-50  hover:opacity-100 lg:hidden;  
-}
-
-.image-navigate-back {
-    @apply absolute inset-y-2/4 left-0 text-5xl shadow-xl text-gray-100 bg-gray-600
-    cursor-pointer opacity-50 hover:opacity-100 lg:hidden; 
-}
-
-.name-action-container {
-    @apply  flex flex-col justify-around sm:col-span-3 md:col-span-2 lg:col-span-1
-        row-start-2 row-start-auto;
-}
-
-.name-action {
-    @apply  flex flex-col justify-center ;
-}
-
-.name-product {
-    @apply  font-bold text-center mb-2 text-4xl sm:text-3xl md:text-2xl 
-        lg:text-4xl mx-2 block;
-}
-
-.price-product {
-    @apply flex justify-center py-2 space-x-4;
-}
-
-.actions-product {
-    @apply  grid grid-cols-2 sm:grid-cols-1 lg:grid-cols-2;
-}
-
-.action-add-cart {
-    @apply text-gray-500 cursor-pointer border border-gray-700 
-        border-opacity-0 hover:border-opacity-60 text-2xl md:text-xl lg:text-2xl
-        w-max transition-all py-1 px-5 md:px-2 lg:px-5 rounded-full 
-        hover:text-green-800  mx-auto;
-}
-
-.action-more-info {
-    @apply  text-gray-600 cursor-pointer border border-gray-700 mx-auto
-        border-opacity-0 hover:border-opacity-60 text-2xl md:text-xl lg:text-2xl
-        w-max transition-all py-1 px-5 md:px-2 lg:px-5 rounded-full; 
-}
-
-.buy-title {
-    @apply  text-gray-800 cursor-pointer border border-gray-800 border-opacity-100
-        border-opacity-0  text-2xl lg:text-3xl hover:bg-gray-800 hover:text-gray-100
-        w-max transition-all py-1 p-5 rounded-full hover:border-opacity-100 mx-auto;
-}
-
-.more-info {
-    @apply  hidden pl-4;
-}
-
-.info-container{
-   @apply  grid grid-cols-2 sm:grid-cols-1 lg:grid-cols-2;   
-}
-
-.info-text {
-    @apply  text-xl my-1;
-}
-
-.info-title {
-    @apply font-extrabold text-gray-400;
-}
 
 
 @tailwind utilities;
+.decoration-bg-light{
+    text-decoration-color: rgba(30, 58, 199,0.7);
+}
+
+.direction-ltr{
+    direction: ltr;
+}
+
+.direction-rtl{
+    direction: rtl;
+}

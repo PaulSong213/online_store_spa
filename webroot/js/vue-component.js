@@ -58,7 +58,9 @@ const reachedEndMessage = {
 const filterTag = {
         props: ['tagName','tagId'],
         template: `
-            <h5 class="discover-tag  select-false" :id="tagId">{{tagName}}</h5>
+            <h5 class="select-none btn-default bg-transparent inline px-3 
+                py-1 text-xl mx-2"
+                 :id="tagId">{{tagName}}</h5>
         `,
     }
     

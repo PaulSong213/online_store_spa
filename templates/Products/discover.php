@@ -5,7 +5,8 @@
 <div class=" mb-10" id="discover">
     <div class="header-discover">
         <h6 class="my-auto font-bold text-xl text-gray-500">PAUL SHOP</h6>
-        <div class="header-tags md:text-right">
+        <div class="text-justify w-full md:w-2/3 lg:w-2/4 transition-all
+             md:text-right m-2">
             <filter-tag 
             v-for="tag in tags"
             :key="tag.id"
@@ -24,8 +25,6 @@
             v-if="bestSellerTitle">FIND</h6>
         </div>
         
-        <featured-product-loader v-if="!isBestSellerThumbnailCreated"></featured-product-loader>
-        <featured-product-loader v-if="!isBestSellerThumbnailCreated"></featured-product-loader>
         <div class="mt-20 grid grid-cols-1 gap-10"> 
             
             <featured-product-card
@@ -36,8 +35,8 @@
             :description="product.description"
             :base-price="product.basePrice"
             :discounted-price="product.discountedPrice"
-            :discount-percentage="product.discountPercentage"
-            :quantity="product.quantity"
+            :discount-percentage="parseFloat(product.discountPercentage).toFixed(0)"
+            :quantity="product.availableQuantity"
             :sold="product.soldQuantity"
             :warranty="product.warrantyDay"
             :is-available="product.isAvailable"
@@ -47,12 +46,15 @@
             >
             </featured-product-card>
         </div>
-        <h4 class="load-more-button select-false"
+        
+        <h4 class="w-max mx-auto my-16"  
             v-if="bestSellerProductsThumbnail.length > 0"
             v-on:click="toggleInlineTab(true,bestSellerTitle,'featured-product-card')"
             v-cloak>
-            View More Best Sellers
+            <span class="btn-default text-xl px-10 py-5 bg-transparent">
+                View More Best Sellers</span>
         </h4>
+        
     </div>
     
     
@@ -145,8 +147,7 @@
            
            <keep-alive>
                 <div class="items-discover grid grids-col-1 gap-10 py-10 mb-10">
-<!--                    props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
-            'sold','warranty','isAvailable','productTags','description','imagePaths'],-->
+
                     <component
                         :is=" 'normal-product-on-tab' "
                         v-bind="{ 
@@ -205,6 +206,7 @@
         },
                                    
         methods:{
+            
             toggleInlineTab(willOpen = true,tabTitle, tabComponentContent = null,
                 tabProductContent = null){
                 if(willOpen){
@@ -267,7 +269,8 @@
     vm.component('reached-end-message',reachedEndMessage),
     vm.component('normal-product-on-tab',{
         props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
-            'sold','warranty','isAvailable','productTags','description','imagePaths','productTags'],
+            'sold','warranty','isAvailable','productTags','description','imagePaths',
+            'productTags'],
         template:
             `
             <div class="normal-prod-card-on-tab">
@@ -385,13 +388,8 @@
     vm.component('featured-product-card', {
         data(){
             return{
-                isMoreInfoOpened: true,
-                moreInfoState: "hidden",
+                isMoreInfoOpened: false,
                 areTagsLoaded: false,
-                infoButtonTitle: "more Information",
-                infoButtonLogoPosition: "",
-                textsState: "",
-                descriptionState: "max-height: 15rem; transition: ease-in 350ms",
                 currentImageIndex: 0,
                 imageEffect: null,
                 isSliderMoved: false
@@ -402,108 +400,201 @@
             'sold','warranty','isAvailable','description','imagePaths','productTags'],
         template: 
           `
-            <div class="item-container">
-                <div class="item-description small-scroll" :style="descriptionState">
-                <h6 class="desciption-text  no-overflow-text" 
-                    :class="textsState">{{description}}</h6>
-                </div>
+            <div class="grid grid-cols-1 sm:grid-cols-10 lg:grid-cols-3 gap-5 
+                sm:gap-2 overflow-hidden">
+                
+                
+                <div v-if="!isMoreInfoOpened"
+                class="small-scroll sm:col-span-full md:col-span-3 
+                    lg:col-span-1 h-full overflow-auto  mx-10 md:mx-2 sm:mt-2 px-4
+                    transition-all row-start-3 sm:row-start-2 md:row-start-auto
+                    max-h-80 direction-rtl hidden sm:block"> 
+                <h6 class="line-clamp-4 text-gray-500 text-justify w-full text-lg
+                    md:text-xl md:relative md:top-1/4 hover:line-clamp-none 
+                    hover:static direction-ltr">
+                     {{description}}</h6> 
                
-                <div class="images-container">
-                    <div class="item-image-slider" :class="imageEffect" style="height:40vh">
+                </div>
+                <div v-else
+                class="small-scroll sm:col-span-full md:col-span-3 
+                    lg:col-span-1 h-full overflow-auto  mx-10 md:mx-2 sm:mt-2 px-4
+                    transition-all row-start-3 sm:row-start-2 md:row-start-auto
+                    sm:block max-h-96 direction-rtl"> 
+                <h6 class="text-gray-500 text-justify w-full text-lg md:text-xl
+                    direction-ltr">
+                {{description}}</h6> 
+                </div>
+                
+               
+                <div class="overflow-hidden sm:col-span-7 md:col-span-5 
+                    lg:col-span-1 sm:px-20 md:px-0 row-start-1 md:row-start-auto
+                    relative"> 
+        
+                    <div class="overflow-hidden max-h-96 max-w-xl relative mx-auto" 
+                        :class="imageEffect" 
+                        style="height:40vh">
+                            
                         <section v-for="(el, index) in imagePaths">
                             <img
                             v-if="index === currentImageIndex"    
                             :src="imagePaths[index]" 
-                            class="product-image bg-black fade-in-out"/>
+                            class="absolute left-2/4 top-2/4 fade-in-out m-auto
+                            min-h-full min-w-full"
+                            style="transform: translate(-50%, -50%);"/>
+                                    
                             <img
                             v-else-if="isSliderMoved"   
                             :src="imagePaths[index]" 
-                            class="product-image bg-black hidden"/>        
+                            class="absolute left-2/4 top-2/4 fade-in-out m-auto
+                            min-h-full min-w-full hidden"/>        
                         </section>
                     </div>
-                    <ion-icon name="chevron-forward-outline" class="image-navigator
-                        image-navigate-forward select-false block md:hidden rounded-full
-                        p-1 bg-gray-800"
+                                    
+                    <ion-icon name="chevron-forward-outline" 
+                        class="absolute inset-y-2/4 right-0 text-5xl shadow-xl 
+                        text-red-100 bg-gray-600 select-none block 
+                        cursor-pointer opacity-50  hover:opacity-100 
+                        rounded-sm p-1 bg-gray-800"
+                        
                         v-if="currentImageIndex !== totalImages"      
                         v-on:click="changeSliderImageToNextImage()"></ion-icon>
-                    <ion-icon name="chevron-back-outline" class="image-navigator
-                        image-navigate-back select-false block md:hidden rounded-full
-                        p-1 bg-gray-800"
+                            
+                    <ion-icon name="chevron-back-outline" 
+                        class="absolute inset-y-2/4 left-0 text-5xl shadow-xl 
+                            text-red-100 bg-gray-600 cursor-pointer opacity-50 
+                            hover:opacity-100 select-none block
+                             rounded-sm p-1 bg-gray-800"
+                        
                         v-if="currentImageIndex !== 0"     
                         v-on:click="changeSliderImageToNextImage(false)"></ion-icon>
                 </div>
                 
-                <div class="name-action-container">
+                <div class="flex flex-col justify-around sm:col-span-3 
+                    md:col-span-2 lg:col-span-1 row-start-2 row-start-auto">
                             
-                    <section class="name-action">
-                        <h4 class="name-product" :class="textsState" >{{name}}</h4>
-
-                        <span class="price-product ">
-                        <s class="text-gray-500 text-lg"
-                            v-if="discountPercentage > 0">
-                            {{ "$" + basePrice }} </s>    
-                        <h2 class="text-green-600 font-bold tracking-wide text-2xl 
-                            md:text-xl lg:text-2xl">
-                            {{ "$" + discountedPrice }} </h2>     
+                    <section class="flex flex-col justify-center">
+                        
+                        <h4 v-if="isMoreInfoOpened"
+                            class="text-center mb-2 text-2xl 
+                            sm:text-2xl md:text-xl lg:text-2xl mx-2 block" 
+                            >{{name}}</h4>
+                        <h4 v-else
+                            class="text-center my-2 text-2xl line-clamp-2 mx-auto
+                            sm:text-2xl md:text-xl lg:text-2xl mx-2 block max-w-xl" 
+                            >{{name}}</h4>    
+                            
+                        <span class="flex justify-center py-2 space-x-4">
+                            <h2 v-if="discountPercentage > 0"
+                                class="text-gray-700 text-xl line-through 
+                                decoration-bg-light text-lg md:text-base 
+                                lg:text-lg table my-auto">
+                                {{ "$" + basePrice }} </h2>    
+                                
+                            <h2 class="font-bold tracking-widest
+                               text-3xl md:text-2xl lg:text-3xl table my-auto">
+                                {{ "$" + discountedPrice }} </h2> 
+                                
+                            <h2 v-if="discountPercentage > 0"
+                                class="discount-percentage-tag py-0 px-2  
+                                    text-lg md:text-base lg:text-lg table my-auto">
+                                {{ discountPercentage + "%" }} </h2>
+                            
                         </span>
 
-                        <section class="actions-product">
-                            <h5 v-if="isAvailable" class="action-add-cart select-false">
-                                <ion-icon name='cart-outline' style="margin-bottom:-2px">
-                                </ion-icon>add to Cart </h5>
+                        <section class="mt-10 flex flex-col justify-center
+                               space-y-2">
+                                    
+                            <h5 v-if="isAvailable" 
+                                class="group btn-default">
+                                <ion-icon name='cart-outline'
+                                    class="transform rotate-12
+                                        group-hover:font-black"> 
+                                </ion-icon>add to Cart</h5>
                             
-                            <h5 v-else class="action-add-cart 
-                                select-false hover:text-gray-700">
-                                <ion-icon name='bookmark-outline' style="margin-bottom:-2px">
-                                </ion-icon>add to Wishlist </h5>
+                            <h5 v-else 
+                                class="group btn-default">
+                                <ion-icon name='balloon-outline'
+                                    class="transform rotate-12 
+                                        group-hover:font-black"> 
+                                </ion-icon> add to Wishlist</h5>
 
-                            <h5 class="action-more-info" v-on:click="moreInfoToggle">
-                               
-                                <ion-icon name="chevron-down-outline" 
-                                style="margin-bottom: -3px;transition: ease-in-out 650ms"
-                                class="more-info-logo" :class="infoButtonLogoPosition" ></ion-icon>
-                              
-                                <span class="more-info-title select-false">
-                                {{ infoButtonTitle }}</span>
-
-                            </h5>
+                            <h5 class="text-gray-600 cursor-pointer
+                                text-2xl md:text-xl lg:text-2xl text-center
+                                transition-all table m-auto hover:underline 
+                                hover:text-blue-600 select-none"  
+                                v-on:click="moreInfoToggle">
                                         
+                                <span v-if="!isMoreInfoOpened">        
+                                <ion-icon name="chevron-down-outline"> 
+                                </ion-icon>
+                                    more information
+                                </span>
+                                 
+                                <span v-if="isMoreInfoOpened"
+                                    class="text-lg">        
+                                    less information
+                                </span> 
+                                        
+                            </h5>
                         </section>
                     </section>
-
-                    <section class="action-buy" :class="moreInfoState" >
-                        <h5 v-if="isAvailable" class="buy-title select-false ">
-                            <ion-icon name="checkmark-done-outline" 
-                            style="margin-bottom: -2px"></ion-icon>
-                            Buy now </h5>
-                        <h5 v-else class="buy-title select-false hover:bg-white
-                            cursor-auto text-2xl hover:text-black border-0 tracking-wider">
-                            <ion-icon name="construct-outline" style="margin-bottom: -2px">
-                            </ion-icon> Item Unavailble yet </h5>
-                    </section>
-
-                    <section class="more-info" :class="moreInfoState">
-                        <div class="info-container">
-                        <h5 class="info-text"><span class="info-title">Available: </span>{{quantity}} items</h5>
-                        <h5 class="info-text"><span class="info-title">Sold: </span>{{sold}} items</h5>    
-                        <h5 class="info-text">
-                            <span class="info-title">Warranty: </span>{{warranty}}
-                            <span v-if="warranty > 1"> days</span>
-                            <span v-else> day</span>
+                    
+                    <!--MORE INFORMATION TAB -->
+                    <transition name="fade">                    
+                    <section
+                        class="mt-4"
+                        v-if="isMoreInfoOpened">
+                            
+                        <h5 v-if="isAvailable" 
+                            class="group btn-default">
+                            Buy now</h5>
+                                    
+                        <h5 v-else class="text-red-500 text-2xl text-center 
+                            tracking-wider table m-auto">
+                             Item Unavailble yet 
                         </h5>
-                        <h5 class="info-text" v-if="areTagsLoaded">
-                            <span class="info-title">
-                            Tags: </span>
-                            <span
-                            v-for="productTag in productTags">
-                                <p v-if="productTag.productId === id"
-                                class="inline">
-                                    {{productTag.tagName + " "}}
-                                </p>        
-                            </span>
-                        </h5>
-                        </div>
-                    </section>        
+
+                        <section
+                            class="mt-5">
+                            
+                            <div class="grid grid-cols-2 sm:grid-cols-1 
+                                lg:grid-cols-2 ">
+                              
+
+                            <h5 class="text-xl text-center"><span 
+                                class="font-extrabold text-gray-600">
+                                Available: </span>{{quantity}} items</h5>
+
+                            <h5 class="text-xl text-center"><span 
+                                class="font-extrabold text-gray-600">
+                                Sold: </span>{{sold}} items</h5>
+
+                            <h5 class="text-xl text-center">
+                                <span 
+                                class="font-extrabold text-gray-600">
+                                Warranty: </span>{{warranty}}
+                                <span v-if="warranty > 1"> days</span>
+                                <span v-else> day</span>
+
+                            </h5>
+
+                            <h5  v-if="areTagsLoaded"
+                                class="text-xl text-center">
+                                <span class="font-extrabold text-gray-600">
+                                Tags: </span>
+                                <span
+                                v-for="productTag in productTags">
+                                    <p v-if="productTag.productId === id"
+                                    class="inline">
+                                        {{productTag.tagName + " "}}
+                                    </p>        
+                                </span>
+                            </h5>
+                            </div>
+                        </section>
+                    </section>                    
+                    </transition>
+                    
                 </div>
             </div>    
           `,
@@ -514,22 +605,7 @@
                 if(!this.areTagsLoaded){
                     this.areTagsLoaded = true;
                 }
-                    
-                if(this.isMoreInfoOpened){
-                    this.moreInfoState = "block fade-in";
-                    this.infoButtonTitle = " less Information";
-                    this.infoButtonLogoPosition = "transform rotate-180 md hydrated";
-                    this.textsState = "can-overflow-text";
-                    this.descriptionState = "max-height: 50vh; transition: ease-out 350ms";
-                    this.isMoreInfoOpened = false;
-                }else{
-                    this.moreInfoState = "hidden";
-                    this.infoButtonTitle = " more Information";
-                    this.infoButtonLogoPosition = "md hydrated";
-                    this.textsState = "";
-                    this.descriptionState = "max-height: 15rem; transition: ease-out 350ms";
-                    this.isMoreInfoOpened = true;
-                }
+                this.isMoreInfoOpened = !this.isMoreInfoOpened;
                 this.isSliderMoved = true;
             },
             changeSliderImageToNextImage(toNextImage = true){
@@ -550,5 +626,6 @@
         
     }),
     vm.component('filter-tag',filterTag),
+    
     productAppInstance = vm.mount("#discover");
 </script>

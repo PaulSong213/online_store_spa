@@ -5,7 +5,15 @@ module.exports = {
     extend: {},
   },
   variants: {
-    extend: {},
+    extend: {
+        lineClamp: ['hover'],
+        backgroundColor: ['active'],
+        fontWeight: ['group-hover'],
+        position: ['hover'],
+        textColor: ['active']
+    },
   },
-  plugins: [],
+  plugins: [
+      require('@tailwindcss/line-clamp'),
+  ],
 }

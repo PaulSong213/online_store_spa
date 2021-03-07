@@ -1,3 +1,14 @@
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 150ms ease-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  margin-bottom: -20%;
+}
+
 
 [v-cloak] { display: none; }
 [v-cloak] > * { display:none; }
@@ -67,15 +78,6 @@
     transition: ease-in-out 350ms
 }
 
-.select-false {
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
-    -moz-user-select: none; /* Old versions of Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none; /* Non-prefixed version, currently
-    supported by Chrome, Edge, Opera and Firefox */
-}
 
 .name-product{
     display: -webkit-box;
@@ -85,8 +87,6 @@
     text-overflow: ellipsis;
     direction:ltr;
 }
-
-
 
 .no-overflow-text {
     display: -webkit-box;
