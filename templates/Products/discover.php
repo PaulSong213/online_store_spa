@@ -3,7 +3,7 @@
 ?>
 
 <div class=" mb-10" id="discover">
-    <div class="header-discover">
+    <div class="flex justify-between flex-col-reverse md:flex-row my-5">
         <h6 class="my-auto font-bold text-xl text-gray-500">PAUL SHOP</h6>
         <div class="text-justify w-full md:w-2/3 lg:w-2/4 transition-all
              md:text-right m-2">
@@ -17,7 +17,7 @@
     </div>
     
     <div class="best-sellers content my-10">
-        <div class="header-title mt-0">
+        <div class="bg-white flex mt-20 md:mt-0">
             <h1 class="my-auto font-medium" style="margin-right: 1.5vw">
                 {{bestSellerTitle}}
             </h1>
@@ -85,11 +85,12 @@
         </div>
     </div>
     
-<!--    INLINE TAB -->
-    <div class="inline-tab fixed bg-white w-full h-full border-2 border-gray-300 
-        bottom-0 left-2/4 shadow-2xl rounded-t-3xl overflow-hidden"
-        :class="inlineTabAnimation"
-        style="max-height: 90vh;max-width: 1200px; transform: translateX(-50%);"
+	<!--INLINE TAB -->
+	<transition name="slide-fade">
+    <div class="fixed bg-white w-full h-full border-2 border-gray-300 bottom-0 left-2/4
+         shadow-2xl overflow-hidden max-w-screen-lg h-screen-90 transform -translate-x-1/2"
+		 
+		 
         v-if="isInlineTabOpen">
         <div class="tab-head flex justify-between shadow-2xl p-5">
             <h1 class="my-auto font-bold text-3xl tracking-widest"
@@ -98,7 +99,10 @@
             </h1>
             <span v-on:click="toggleInlineTab(false)">
                 <ion-icon name="close-outline" 
-                    class="close-tab-button"    
+                    class="border border-gray-300 border-opacity-0 hover:text-white
+						hover:border-opacity-100 hover:shadow-xl hover:bg-yellow-900 
+						transition-all p-1 rounded-full text-5xl text-gray-700 
+						font-bold  cursor-pointer"    
                 ></ion-icon>
             </span>
         </div>
@@ -171,6 +175,8 @@
         </div>
         
     </div>
+	</transition>
+	
 </div>
 
 <?= $this->Html->script('vue-component') ?>
@@ -203,6 +209,7 @@
             this.addBestSellerProduct('/products/show/1', true),
             this.addNormalProduct(),
             this.addProductTags()
+			
         },
                                    
         methods:{
@@ -234,6 +241,7 @@
                 for(var i = 0; i < product.length; i++){
                     this.normalProduct.push(product[i]);
                 }
+				//this.toggleInlineTab(true,"",'normal-product-on-tab',product[1]);
             },
             async addBestSellerProduct(page = '/products/show/1',isThumbnailOnCreate = false){
                 if(!this.addingNewItem && this.bestSellerNextPage !== ""){
@@ -268,62 +276,129 @@
     vm.component('circle-loader',circleLoader),
     vm.component('reached-end-message',reachedEndMessage),
     vm.component('normal-product-on-tab',{
+		
+		data(){
+			return{
+				mainImageIndex: 0
+			}
+		},
+			
         props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
             'sold','warranty','isAvailable','productTags','description','imagePaths',
             'productTags'],
+		
         template:
             `
-            <div class="normal-prod-card-on-tab">
-                <div class="prod-card-on-tab-container"
-                     style="height: 50vh;">
-                    <section  class="prod-card-main-image-container">
-                        <img :src="imagePaths[0]" class="prod-card-main-image"
-                             />
+            <div>
+                <div class="md:grid md:grid-cols-10 overflow-hidden gap-10 lg:gap-20
+					bg-yellow-900 px-4 py-8 h-screen-50">
+		
+                    <section  class="relative h-4/5 md:h-full  md:col-span-7 
+						overflow-hidden flex flex-col justify-center">
+							
+                        <img :src="imagePaths[mainImageIndex]" class="relative max-h-full block 
+							w-auto m-auto self-center bg-yellow-800"/>
+                             
                     </section>
-                    <section class="prod-card-list-image-container small-scroll">
+                    <section class="small-scroll overflow-x-auto overflow-y-hidden 
+						md:overflow-y-auto md:overflow-x-hidden md:px-5 py-3 relative 
+						h-1/5 md:h-full md:col-span-3">
+        
                         <div class="whitespace-nowrap h-full md:h-auto max-w-xs">
                             
-                            <div class="prod-card-sec-image-container select-false"
+                            <div class="select-none h-full max-w-lg overflow-hidden 
+								inline-block md:h-auto md:mx-2 md:block  cursor-pointer
+								transition-all md:w-full mb-2 mr-1"
+        
                                 v-for="(el, index) in imagePaths">
-                                <img :src="imagePaths[index]" class="prod-card-sec-image" 
-                                  />
+								
+								<img :src="imagePaths[index]"
+									v-if="mainImageIndex === index"
+									v-on:click="mainImageIndex = index"
+									class="h-full md:w-full 
+									md:h-auto object-cover m-auto transition-all 
+									bg-yellow-800"
+									style="filter:blur(2px);"/> 
+									
+                                <img :src="imagePaths[index]"
+									v-else
+									v-on:click="mainImageIndex = index"
+									class="h-full md:w-full 
+									md:h-auto object-cover m-auto transition-all 
+									bg-yellow-800 transform hover:scale-105"/> 
+                                  
                             </div>
                             
                         </div>
                     </section> 
                 </div>
-                <div class="prod-card-information-container">
-                    <section class="prod-card-main-info">
+                <div class="grid grid-cols-1 md:grid-cols-10  mt-5 gap-10 md:gap-5">
+                    <section class="col-span-full md:col-span-7">
                         <div class="bg-yellow-300 p-4 flex justify-start
-                             flex-col" style="max-height: fit-content">
+                             flex-col max-h-full">
                             <div>
-                                <h3 class="prod-title">{{name}}</h3>
+                                <h3 class="text-3xl text-left tracking-wider text-gray-800
+								 font-normal text-center">{{name}}</h3>
                             </div>
-                            <div class="flex justify-center my-3">
-                                <s class="prod-base-price">{{'$' + basePrice}}</s>
-                                <h4 class="prod-discounted-price">{{'$' + discountedPrice}}</h4>
-                                <h6 class="prod-discount-percentage">{{discountPercentage + '%'}}</h6>
+                            <div class="flex justify-center my-3 items-center">
+                                <h6 v-if="discountPercentage > 0"
+									class="text-lg md:text-2xl text-red-600 line-through
+								    decoration-bg-light mb-8">
+									{{'$' + basePrice}}</h6>
+										
+                                <h4 class="text-5xl md:text-6xl mx-5 text-black">
+									{{'$' + discountedPrice}}</h4>
+										
+                                <h6 v-if="discountPercentage > 0"
+									class="discount-percentage-tag text-lg md:text-xl
+									 mb-8">
+									{{discountPercentage + '%'}}</h6>
+										
                             </div>
 
-                            <div class="prod-action-container">
-                                <h5  class="prod-action-buy select-false">BUY NOW</h5>
-                                <h5  class="prod-action-cart select-false">
-                                    <ion-icon name="cart-outline"class="text-2xl transform rotate-12">
+                            <div v-if="isAvailable" 
+								class="flex justify-around">
+                                <h5  class="btn-on-tab">
+									BUY NOW</h5>
+										
+                                <h5  class="btn-on-tab">
+										
+                                    <ion-icon name="cart-outline"class="text-2xl 
+									transform rotate-12">
                                     </ion-icon>ADD TO CART
                                 </h5>       
                             </div>
+							
+							<div v-else 
+								class="flex flex-col justify-center w-max mx-auto">
+                                <h5  class="btn-on-tab">
+									<ion-icon name="balloon-outline" 
+									class="text-2xl"> 
+                                    </ion-icon>		
+									ADD TO WISHLIST</h5>
+										
+                                <h5  class="text-gray-700 tracking-wider text-xl 
+									table m-auto">
+                                    Item will be available soon
+                                </h5>       
+                            </div>
+											
                         </div>
                     </section> 
-                    <section class="prod-card-sec-info">
-                        <h4 class="prod-description"><span class="text-gray-500">
+                    <section class="col-span-full md:col-span-3 grid grid-cols-2">
+                        <h4 class="text-2xl text-gray-600">
+							<span class="text-gray-500">
                             Available: </span> {{quantity + ' items'}} </h4>
-                        <h4 class="prod-description"><span class="text-gray-500">
+									
+                        <h4 class="text-2xl text-gray-600"><span class="text-gray-500">
                             <span class="info-title">Warranty: </span>{{warranty}}
                             <span v-if="warranty > 1"> days</span>
                             <span v-else> day</span> </h4> 
-                        <h4 class="prod-description"><span class="text-gray-500">
+								
+                        <h4 class="text-2xl text-gray-600"><span class="text-gray-500">
                             Sold: </span> {{sold + ' items'}} </h4>
-                        <h4 class="prod-description"><span class="text-gray-500">
+									
+                        <h4 class="text-2xl text-gray-600"><span class="text-gray-500">
                             Tags: </span>
                             <span
                             v-for="productTag in productTags">
@@ -334,7 +409,9 @@
                             </span>        
                         </h4>
                         
-                        <h4 class="prod-description">{{description}} </h4>
+                        <h4 class="text-2xl text-gray-600 col-span-full">
+						{{description}} </h4>
+										
                     </section> 
                 </div>    
             </div>
@@ -425,50 +502,71 @@
                 {{description}}</h6> 
                 </div>
                 
-               
-                <div class="overflow-hidden sm:col-span-7 md:col-span-5 
-                    lg:col-span-1 sm:px-20 md:px-0 row-start-1 md:row-start-auto
-                    relative"> 
-        
-                    <div class="overflow-hidden max-h-96 max-w-xl relative mx-auto" 
-                        :class="imageEffect" 
-                        style="height:40vh">
-                            
-                        <section v-for="(el, index) in imagePaths">
-                            <img
-                            v-if="index === currentImageIndex"    
-                            :src="imagePaths[index]" 
-                            class="absolute left-2/4 top-2/4 fade-in-out m-auto
-                            min-h-full min-w-full"
-                            style="transform: translate(-50%, -50%);"/>
-                                    
-                            <img
-                            v-else-if="isSliderMoved"   
-                            :src="imagePaths[index]" 
-                            class="absolute left-2/4 top-2/4 fade-in-out m-auto
-                            min-h-full min-w-full hidden"/>        
-                        </section>
-                    </div>
-                                    
-                    <ion-icon name="chevron-forward-outline" 
-                        class="absolute inset-y-2/4 right-0 text-5xl shadow-xl 
-                        text-red-100 bg-gray-600 select-none block 
-                        cursor-pointer opacity-50  hover:opacity-100 
-                        rounded-sm p-1 bg-gray-800"
-                        
-                        v-if="currentImageIndex !== totalImages"      
-                        v-on:click="changeSliderImageToNextImage()"></ion-icon>
-                            
-                    <ion-icon name="chevron-back-outline" 
-                        class="absolute inset-y-2/4 left-0 text-5xl shadow-xl 
-                            text-red-100 bg-gray-600 cursor-pointer opacity-50 
-                            hover:opacity-100 select-none block
-                             rounded-sm p-1 bg-gray-800"
-                        
-                        v-if="currentImageIndex !== 0"     
-                        v-on:click="changeSliderImageToNextImage(false)"></ion-icon>
-                </div>
-                
+				<div class="row-start-1 md:row-start-auto sm:col-span-7 md:col-span-5 
+					lg:col-span-1 sm:px-20 md:px-0 ">
+					<div class="overflow-hidden relative"> 
+
+						<div class="overflow-hidden max-h-80 md:max-h-96 max-w-xl relative mx-auto
+							h-screen-40" 
+							:class="imageEffect"> 
+
+							<section v-for="(el, index) in imagePaths">
+								<img
+								v-if="index === currentImageIndex"    
+								:src="imagePaths[index]" 
+								class="absolute left-2/4 top-2/4 fade-in-out m-auto
+								min-h-full min-w-full"
+								style="transform: translate(-50%, -50%);"/>
+
+								<img
+								v-else-if="isSliderMoved"   
+								:src="imagePaths[index]" 
+								class="absolute left-2/4 top-2/4 fade-in-out m-auto
+								min-h-full min-w-full hidden"/>        
+							</section>
+						</div>
+
+						<ion-icon name="chevron-forward-outline" 
+							class="absolute inset-y-2/4 right-0 text-5xl shadow-xl 
+							text-red-100 bg-gray-600 select-none block 
+							cursor-pointer opacity-30  hover:opacity-100 
+							rounded-sm p-1 bg-gray-800"
+
+							v-if="currentImageIndex !== totalImages"      
+							v-on:click="changeSliderImageToNextImage()"></ion-icon>
+
+						<ion-icon name="chevron-back-outline" 
+							class="absolute inset-y-2/4 left-0 text-5xl shadow-xl 
+								text-red-100 bg-gray-600 cursor-pointer opacity-30 
+								hover:opacity-100 select-none block
+								 rounded-sm p-1 bg-gray-800"
+
+							v-if="currentImageIndex !== 0"     
+							v-on:click="changeSliderImageToNextImage(false)"></ion-icon>
+					</div>
+					
+					<transition name="slide-left">  
+					<!-- PREVIEW IMAGES -->						
+					<div v-if="isMoreInfoOpened"
+						class="grid grid-cols-5 md:grid-cols-6 gap-1 p-1">
+						<div v-for="(el, index) in imagePaths" >
+							<img
+							v-if="index === currentImageIndex"
+							:src="imagePaths[index]" 
+							class="opacity-60 rounded-sm transition-all"
+							/>
+							<img
+							v-else
+							v-on:click="currentImageIndex = index"		
+							:src="imagePaths[index]" 
+							class="hover:opacity-60 rounded-sm transition-all"
+							/>		
+						</div>
+					</div>
+					</transition>				
+									
+				</div>
+				
                 <div class="flex flex-col justify-around sm:col-span-3 
                     md:col-span-2 lg:col-span-1 row-start-2 row-start-auto">
                             
@@ -507,7 +605,7 @@
                             <h5 v-if="isAvailable" 
                                 class="group btn-default">
                                 <ion-icon name='cart-outline'
-                                    class="transform rotate-12
+                                    class="transform rotate-12 mr-1
                                         group-hover:font-black"> 
                                 </ion-icon>add to Cart</h5>
                             
@@ -519,7 +617,7 @@
                                 </ion-icon> add to Wishlist</h5>
 
                             <h5 class="text-gray-600 cursor-pointer
-                                text-2xl md:text-xl lg:text-2xl text-center
+                                text-xl md:text-xl lg:text-2xl text-center
                                 transition-all table m-auto hover:underline 
                                 hover:text-blue-600 select-none"  
                                 v-on:click="moreInfoToggle">
@@ -546,7 +644,7 @@
                         v-if="isMoreInfoOpened">
                             
                         <h5 v-if="isAvailable" 
-                            class="group btn-default">
+                            class="group btn-default text-xl">
                             Buy now</h5>
                                     
                         <h5 v-else class="text-red-500 text-2xl text-center 
