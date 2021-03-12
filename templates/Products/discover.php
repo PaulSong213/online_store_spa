@@ -9,6 +9,7 @@
              md:text-right m-2">
             <filter-tag 
             v-for="tag in tags"
+			v-on:click="getProductsOfTag(tag.id, tag.name)"
             :key="tag.id"
             :tag-name="tag.name"
             :tag-id="tag.id"
@@ -132,17 +133,20 @@
                             imagePaths : product.imagesPath,
                         }"
                     ></component>
-                    <div class="pt-10 pb-20">
-                        <circle-loader
-                            v-if="addingNewItem">
-                        </circle-loader>
-                        <reached-end-message
-                            v-if="!bestSellerNextPage"
-                            message="Reached End. There are more items to discover!">
-                        </reached-end-message> 
-                    </div>
+                    
                 </div>    
             </keep-alive>
+			
+			<!--LOADER-->
+			<div class="pt-10 pb-20">
+                <circle-loader
+                    v-if="addingNewItem">
+                </circle-loader>
+                <reached-end-message
+                    v-if="!bestSellerNextPage"
+                    message="Reached End. There are more items to discover!">
+                </reached-end-message> 
+            </div>
         </div>
         
         <div class="tab-content p-10 h-full overflow-auto small-scroll"
@@ -172,8 +176,51 @@
                     ></component>
                 </div>    
             </keep-alive>
+			<!--LOADER-->
+			<div class="pt-10 pb-20">
+                <circle-loader
+                    v-if="addingNewItem">
+                </circle-loader>
+            </div>
         </div>
         
+		<div class="tab-content p-10 h-full overflow-auto small-scroll"
+             v-if="inlineTabContentComponent === 'normal-product-card-related-tags' "
+             >
+           
+           <keep-alive>
+                <div class="grid grid-cols-2 md:grid-cols-3 
+					lg:grid-cols-4 gap-2">
+					
+                    <component
+                        :is=" 'normal-product-card' "
+						v-for="product in productsOnRelatedTags.product"
+                        v-bind="{ 
+                            key : product.id,
+                            id : product.id,
+                            name : product.name,
+                            description : product.description,
+                            basePrice : product.basePrice,
+                            discountedPrice : product.discountedPrice,
+                            discountPercentage : product.discountPercentage,
+                            quantity : product.availableQuantity,
+                            sold : product.soldQuantity,
+                            warranty : product.warrantyDay,
+                            isAvailable : product.isAvailable,
+                            imagePaths : product.imagesPath,
+                            productTags : productTags
+                        }"
+                    ></component>
+                </div>    
+            </keep-alive>
+			<!--LOADER-->
+			<div class="pt-10 pb-20">
+                <circle-loader
+                    v-if="addingNewItem">
+                </circle-loader>
+            </div>
+        </div>
+		
     </div>
 	</transition>
 	
@@ -201,7 +248,8 @@
                 addingNewItem : false,
                 isBestSellerThumbnailCreated : false,
                 normalProduct: Array(),
-                inlineTabNormalProduct : null
+                inlineTabNormalProduct : null,
+				productsOnRelatedTags: Array()
             }
         },
         mounted(){
@@ -213,7 +261,7 @@
         },
                                    
         methods:{
-            
+			
             toggleInlineTab(willOpen = true,tabTitle, tabComponentContent = null,
                 tabProductContent = null){
                 if(willOpen){
@@ -269,7 +317,34 @@
             async addProductTags(){
                 let response = await $.get('/products-tags/show',function(data){return data });
                 this.productTags = JSON.parse(response);
-            } 
+            },
+			async getProductsOfTag(tagId, tagName){
+				
+				this.addingNewItem = true;
+				this.productsOnRelatedTags = Array();
+				this.toggleInlineTab(true,tagName,'normal-product-card-related-tags',this.productsOnRelatedTags);
+				var tagOnProductUrl = '/products-tags/show/' + tagId;
+				let response = await $.get(tagOnProductUrl,function(data){return data });
+				let listRelatedProducts = JSON.parse(response).products;
+				let seperator = ",";
+				let listProductId = null;
+				for(var i = 0; i < listRelatedProducts.length; i++){
+					listProductId = listProductId + listRelatedProducts[i].id + seperator;
+				}
+				//Get Full Details of Products
+				if(listProductId){
+					let specificProductUrl = '/products/show/null/' + listProductId;
+					this.getSpecificProducts(specificProductUrl);	
+				}
+				
+				
+			},
+			async getSpecificProducts(url){
+				let response = await $.get( url,function(data){return data });
+				let products = JSON.parse(response);
+				this.productsOnRelatedTags = products;
+				this.addingNewItem = false;
+			}
         }
     })
     vm.component('featured-product-loader',featuredProductLoader),
@@ -427,7 +502,7 @@
                 bg-yellow-300 p-0">
                                     
                 <div>
-                    <img :src="imagePaths[0]" class="rounded-none"/>
+                    <img :src="imagePaths[0]" class="rounded-none"/> 
                 </div>
                             
                 <div class="flex flex-col justify-between space-y-4 pt-2">

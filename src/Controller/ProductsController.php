@@ -124,12 +124,14 @@ class ProductsController extends AppController
         $this->set(compact('products'));
     }
     
-    public function show($productTypeId = 0){
+    public function show($productTypeId = 0,$productRequestList = ""){
         $isPageHasData = true;
-       
+		
+		$productListId = explode(",", $productRequestList);
+		
         try {
             $requestedProductTypeName = "allProducts";
-            if($productTypeId > 0){
+            if($productTypeId > 0 && !$productRequestList ){
                 $this->paginate = [
                     'contain' => ['Sellers', 'ProductTypes','Images'],
                     'conditions' =>['Products.product_type_id' => $productTypeId],
@@ -144,11 +146,22 @@ class ProductsController extends AppController
                     ->toList();
 
                 $requestedProductTypeName = $query[0]->name;
-            }else{
+			}elseif(sizeof($productListId) > 0 ){
+				
+				$this->paginate = [
+                    'contain' => ['Sellers', 'ProductTypes','Images'],
+                    'conditions' =>['Products.id in' => $productListId ],
+                    'limit' => 20,
+                    'order' => ['sold' => 'desc']
+                ];
+				
+				
+			}else{
                 $this->paginate = [
                     'contain' => ['Sellers', 'ProductTypes','Images'],
                 ];
             }
+			
             
             $products = $this->paginate($this->Products);
             $this->set(compact('products','requestedProductTypeName','isPageHasData'));

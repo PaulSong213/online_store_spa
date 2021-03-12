@@ -110,14 +110,22 @@ class ProductsTagsController extends AppController
         return $this->redirect(['action' => 'index']);
     }
     
-    public function show()
+    public function show($tag = null)
     {
-        $this->paginate = [
-            'contain' => ['Products', 'Tags'],
-        ];
+		if(!$tag){
+			$this->paginate = [
+				'contain' => ['Products', 'Tags'],
+			];
+		}else{
+			
+			$this->paginate = [
+				'contain' => ['Products', 'Tags'],
+				'conditions' =>['ProductsTags.tag_id' => $tag],
+			];
+		}
         $productsTags = $this->paginate($this->ProductsTags);
         
-        $this->set(compact('productsTags'));
+        $this->set(compact('productsTags','tag'));
     }
     
 }

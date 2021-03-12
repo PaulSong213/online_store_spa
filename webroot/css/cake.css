@@ -32,11 +32,19 @@
 
 [v-cloak] { display: none; }
 [v-cloak] > * { display:none; }
+
 .circle-loader{
-    border-bottom-color:#333333;
-    animation: circle-loader-rotate 600ms linear;
+    border-bottom-color:#7f1d1d ;
+    animation: circle-loader-rotate 650ms linear;
     animation-iteration-count: infinite;
-    animation-delay: 0ms;
+    transition: all 450ms ease;
+}
+
+@keyframes circle-loader-rotate{
+    0%{transform: rotate(0deg);opacity:1}
+	25%{border-bottom-color:rgba(120, 53, 15,0.4)}
+    50%{transform: rotate(120deg);opacity:0.6;}
+    100%{transform: rotate(360deg);opacity:1}
 }
 
 .open-tab{
@@ -58,11 +66,7 @@
     animation-duration: 250ms;
 }
 
-@keyframes circle-loader-rotate{
-    0%{transform: rotate(0deg);opacity:1}
-    50%{transform: rotate(120deg);opacity:0.6}
-    100%{transform: rotate(360deg);opacity:1}
-}
+
 
 @keyframes open-to-up{
     0%   {height: 0;}
