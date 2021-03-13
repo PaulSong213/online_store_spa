@@ -133,7 +133,7 @@ class ProductsController extends AppController
             $requestedProductTypeName = "allProducts";
             if($productTypeId > 0 && !$productRequestList ){
                 $this->paginate = [
-                    'contain' => ['Sellers', 'ProductTypes','Images'],
+                    'contain' => ['Sellers', 'ProductTypes','Images','Tags'],
                     'conditions' =>['Products.product_type_id' => $productTypeId],
                     'limit' => 2,
                     'order' => ['sold' => 'desc']
@@ -149,7 +149,7 @@ class ProductsController extends AppController
 			}elseif(sizeof($productListId) > 0 ){
 				
 				$this->paginate = [
-                    'contain' => ['Sellers', 'ProductTypes','Images'],
+                    'contain' => ['Sellers', 'ProductTypes','Images','Tags'],
                     'conditions' =>['Products.id in' => $productListId ],
                     'limit' => 20,
                     'order' => ['sold' => 'desc']
@@ -158,7 +158,7 @@ class ProductsController extends AppController
 				
 			}else{
                 $this->paginate = [
-                    'contain' => ['Sellers', 'ProductTypes','Images'],
+                    'contain' => ['Sellers', 'ProductTypes','Images','Tags'],
                 ];
             }
 			

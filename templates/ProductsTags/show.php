@@ -8,7 +8,6 @@
 //print_r(json_encode($productsTags));
 $items = [];
 
-if(!$tag){
 foreach ($productsTags as $productTag) {
     $items[] = array(
 		'id' => $productTag->id,
@@ -17,21 +16,6 @@ foreach ($productsTags as $productTag) {
         'productId' => $productTag->product->id,
 		'productName' => $productTag->product->name	
 	);
-}
-}else{
-	$specificTagId = null;
-	$specificTagName = null;
-	$relatedProduct = [];
-	foreach ($productsTags as $productTag) {
-		$relatedProduct[] = array(
-			'id' => $productTag->product->id,
-			'name' => $productTag->product->name,
-		);
-		if(!$specificTagId){$specificTagId = $productTag->tag->id; }
-		if(!$specificTagName){$specificTagName = $productTag->tag->name; }
-	}
-	$items = ['tagId' => $specificTagId, 'tagName' => $specificTagName,
-		'products' => $relatedProduct];
 }
 
 $listItems = array('items' => $items);

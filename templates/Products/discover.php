@@ -9,7 +9,7 @@
              md:text-right m-2">
             <filter-tag 
             v-for="tag in tags"
-			v-on:click="getProductsOfTag(tag.id, tag.name)"
+			v-on:click="getRelatedToTag(tag.id, tag.name)"
             :key="tag.id"
             :tag-name="tag.name"
             :tag-id="tag.id"
@@ -41,7 +41,7 @@
             :sold="product.soldQuantity"
             :warranty="product.warrantyDay"
             :is-available="product.isAvailable"
-            :product-tags="productTags"
+            :tags="product.tags"
             :image-paths="product.imagesPath"
             :next-page="bestSellerNextPage"
             >
@@ -77,9 +77,11 @@
             :sold="product.soldQuantity"
             :warranty="product.warrantyDay"
             :is-available="product.isAvailable"
-            :product-tags="productTags"
+            :product-tags="product.tags"
             :image-paths="product.imagesPath"
-            v-on:click="toggleInlineTab(true,'','normal-product-on-tab',product)"
+            v-on:click="toggleInlineTab(true,'','normal-product-on-tab',product,
+				null,false,product.tags.id)"
+			
             >
             </normal-product-card>
             
@@ -94,10 +96,25 @@
 		 
         v-if="isInlineTabOpen">
         <div class="tab-head flex justify-between shadow-2xl p-5">
-            <h1 class="my-auto font-bold text-3xl tracking-widest"
-                v-cloak>
-                {{inlineTabTitle}}
-            </h1>
+            <div class="flex space-x-4">
+				<!--currentHistoryIndex-->
+				<ion-icon
+					v-if="inlineTabHistoryData.length > 0"
+					name="return-down-back-outline" 
+                    class="border border-gray-300 border-opacity-0 hover:text-white
+						hover:border-opacity-100 hover:shadow-xl hover:bg-yellow-900 
+						transition-all p-1 rounded-full text-5xl text-gray-700 
+						font-bold  cursor-pointer mx-4"  
+					v-on:click="toggleInlineTab(true,inlineTabHistoryData[currentHistoryIndex].tabTitle,
+						inlineTabHistoryData[currentHistoryIndex].tabComponent,
+						inlineTabHistoryData[currentHistoryIndex].tabData,
+						null,true)"	
+                ></ion-icon>
+				<h1 class="my-auto font-bold text-3xl tracking-widest"
+					v-cloak>
+					{{inlineTabTitle}}
+				</h1>
+			</div>
             <span v-on:click="toggleInlineTab(false)">
                 <ion-icon name="close-outline" 
                     class="border border-gray-300 border-opacity-0 hover:text-white
@@ -129,7 +146,7 @@
                             sold : product.soldQuantity,
                             warranty : product.warrantyDay,
                             isAvailable : product.isAvailable,
-                            productTags : productTags,
+                            tags : product.tags,
                             imagePaths : product.imagesPath,
                         }"
                     ></component>
@@ -171,7 +188,26 @@
                             warranty : inlineTabNormalProduct.warrantyDay,
                             isAvailable : inlineTabNormalProduct.isAvailable,
                             imagePaths : inlineTabNormalProduct.imagesPath,
-                            productTags : productTags
+                            tags : inlineTabNormalProduct.tags
+                        }"
+                    ></component>
+					<component
+                        :is=" 'normal-product' "
+						v-for="product in productsOnRelatedTags.product"
+                        v-bind="{ 
+                            key : product.id,
+                            id : product.id,
+                            name : product.name,
+                            description : product.description,
+                            basePrice : product.basePrice,
+                            discountedPrice : product.discountedPrice,
+                            discountPercentage : product.discountPercentage,
+                            quantity : product.availableQuantity,
+                            sold : product.soldQuantity,
+                            warranty : product.warrantyDay,
+                            isAvailable : product.isAvailable,
+                            imagePaths : product.imagesPath,
+                            tags : product.tags
                         }"
                     ></component>
                 </div>    
@@ -208,8 +244,11 @@
                             warranty : product.warrantyDay,
                             isAvailable : product.isAvailable,
                             imagePaths : product.imagesPath,
-                            productTags : productTags
+                            tags : product.tags
                         }"
+						v-on:click="toggleInlineTab(true,' ', 'normal-product-on-tab',
+								product,productsOnRelatedTags.product)"
+				
                     ></component>
                 </div>    
             </keep-alive>
@@ -240,11 +279,11 @@
                 bestSellerNextPage: null,
                 bestSellerPrevPage: null,
                 tags: null,
-                productTags: null,
                 isInlineTabOpen: false,
                 inlineTabAnimation: "close-tab",
                 inlineTabTitle: null,
                 inlineTabContentComponent: null,
+				inlineTabHistoryData: Array(),
                 addingNewItem : false,
                 isBestSellerThumbnailCreated : false,
                 normalProduct: Array(),
@@ -255,32 +294,40 @@
         mounted(){
             this.addTagList(),
             this.addBestSellerProduct('/products/show/1', true),
-            this.addNormalProduct(),
-            this.addProductTags()
-			
+            this.addNormalProduct()
         },
                                    
         methods:{
 			
             toggleInlineTab(willOpen = true,tabTitle, tabComponentContent = null,
-                tabProductContent = null){
+                tabProductContent = null,prevData = null,willBackToHistory = false,
+				tagIdsForRelated = []){
+				if(prevData){
+					var currentTabData = Array();
+					currentTabData.tabTitle = this.inlineTabTitle;
+					currentTabData.tabComponent = this.inlineTabContentComponent;
+                    currentTabData.tabData = prevData;
+					this.inlineTabHistoryData.push(currentTabData);
+				}
+				this.isInlineTabOpen = willOpen;
                 if(willOpen){
-                    this.isInlineTabOpen = true;
                     this.inlineTabAnimation = "open-tab";
                     if(tabComponentContent === 'featured-product-card'){
                        this.addBestSellerProduct(this.bestSellerNextPage);
                     }
                     if(tabComponentContent === 'normal-product-on-tab'){
                        this.inlineTabNormalProduct = tabProductContent;
+					   console.log(tagIdsForRelated);
+					   this.getRelatedToProducts(tagIdsForRelated);
                     }
                 }else{
-                    this.isInlineTabOpen = false;
+					this.inlineTabHistoryData = Array();
                     this.inlineTabAnimation = "close-tab";
                 }
+				
                 if(tabTitle){this.inlineTabTitle = tabTitle;}
-                
-                if(tabComponentContent){this.inlineTabContentComponent = tabComponentContent}
-                
+                if(tabComponentContent){this.inlineTabContentComponent = tabComponentContent;}
+                if(willBackToHistory){this.inlineTabHistoryData.splice(this.currentHistoryIndex,1);}
             },
             async addNormalProduct(page = '/products/show/2'){
                 let response = await $.get(page,function(data){return data });
@@ -314,29 +361,35 @@
                 let response = await $.get('/tags/show',function(data){return data });
                 this.tags = JSON.parse(response);
             },
-            async addProductTags(){
-                let response = await $.get('/products-tags/show',function(data){return data });
-                this.productTags = JSON.parse(response);
-            },
-			async getProductsOfTag(tagId, tagName){
+            
+			async getRelatedToTag(tagId, tagName){
 				
 				this.addingNewItem = true;
 				this.productsOnRelatedTags = Array();
 				this.toggleInlineTab(true,tagName,'normal-product-card-related-tags',this.productsOnRelatedTags);
-				var tagOnProductUrl = '/products-tags/show/' + tagId;
+				let tagOnProductUrl = '/products-tags/show/' + tagId;
 				let response = await $.get(tagOnProductUrl,function(data){return data });
-				let listRelatedProducts = JSON.parse(response).products;
+				let listRelated = JSON.parse(response);
 				let seperator = ",";
 				let listProductId = null;
-				for(var i = 0; i < listRelatedProducts.length; i++){
-					listProductId = listProductId + listRelatedProducts[i].id + seperator;
+				//console.log(listRelated);
+				for(var i = 0; i < listRelated.length; i++){
+					listProductId = listProductId + listRelated[i].productId + seperator;
 				}
 				//Get Full Details of Products
 				if(listProductId){
 					let specificProductUrl = '/products/show/null/' + listProductId;
 					this.getSpecificProducts(specificProductUrl);	
 				}
-				
+			},
+			async getRelatedToProducts(tagIds = []){
+				console.log(tagIds);
+				let seperator = ",";
+				let formmatedTagIds = tagIds.toString();
+				let tagOnProductUrl = '/products-tags/show/' + formmatedTagIds;
+				let response = await $.get(tagOnProductUrl,function(data){return data });
+				let listRelated = JSON.parse(response);
+				console.log(listRelated);
 				
 			},
 			async getSpecificProducts(url){
@@ -345,7 +398,12 @@
 				this.productsOnRelatedTags = products;
 				this.addingNewItem = false;
 			}
-        }
+        },
+		computed: {
+            currentHistoryIndex(){
+				return this.inlineTabHistoryData.length - 1;
+			}
+        },
     })
     vm.component('featured-product-loader',featuredProductLoader),
     vm.component('circle-loader',circleLoader),
@@ -359,8 +417,8 @@
 		},
 			
         props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
-            'sold','warranty','isAvailable','productTags','description','imagePaths',
-            'productTags'],
+            'sold','warranty','isAvailable','tags','description','imagePaths',
+            'tags'],
 		
         template:
             `
@@ -438,8 +496,9 @@
 										
                                 <h5  class="btn-on-tab">
 										
-                                    <ion-icon name="cart-outline"class="text-2xl 
-									transform rotate-12">
+                                    <ion-icon name="cart-outline"
+									class="text-2xl transform rotate-12">
+									
                                     </ion-icon>ADD TO CART
                                 </h5>       
                             </div>
@@ -461,27 +520,36 @@
                         </div>
                     </section> 
                     <section class="col-span-full md:col-span-3 grid grid-cols-2">
+                       
+					    <h4 class="text-2xl text-gray-600">
+							<span class="text-gray-500">
+                            Available: </span> {{quantity + ' items'}} 
+						</h4>
+									
                         <h4 class="text-2xl text-gray-600">
 							<span class="text-gray-500">
-                            Available: </span> {{quantity + ' items'}} </h4>
-									
-                        <h4 class="text-2xl text-gray-600"><span class="text-gray-500">
-                            <span class="info-title">Warranty: </span>{{warranty}}
-                            <span v-if="warranty > 1"> days</span>
-                            <span v-else> day</span> </h4> 
+								<span class="info-title">Warranty: </span>{{warranty}}
+								<span v-if="warranty > 1"> days</span>
+								<span v-else> day </span> 
+							</span>	
+						</h4> 
 								
-                        <h4 class="text-2xl text-gray-600"><span class="text-gray-500">
-                            Sold: </span> {{sold + ' items'}} </h4>
+                        <h4 class="text-2xl text-gray-600">
+						<span class="text-gray-500">
+                            Sold: </span> {{sold + ' items'}}
+						</h4>
 									
-                        <h4 class="text-2xl text-gray-600"><span class="text-gray-500">
-                            Tags: </span>
-                            <span
-                            v-for="productTag in productTags">
-                                <p v-if="productTag.productId === id"
-                                class="inline">
-                                    {{productTag.tagName + " "}}
-                                </p>        
-                            </span>        
+                        <h4 class="text-2xl text-gray-600">
+							<span class="text-gray-500">
+								<span>Tags: </span>
+								<span
+									v-for="tag in tags">
+									<p 
+									class="inline">
+										{{tag.name + " "}}
+									</p>        
+								</span>
+							</span>				
                         </h4>
                         
                         <h4 class="text-2xl text-gray-600 col-span-full">
@@ -494,15 +562,17 @@
     }),
     vm.component('normal-product-card', {
         props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
-            'sold','warranty','isAvailable','productTags','description','imagePaths'],
+            'sold','warranty','isAvailable','tags','description','imagePaths'],
         template:
             `
             <div class="overflow-hidden cursor-pointer hover:shadow-lg 
                 transition-all flex flex-col justify-between
-                bg-yellow-300 p-0">
+                bg-yellow-300 p-0  max-w-sm mx-auto">
                                     
-                <div>
-                    <img :src="imagePaths[0]" class="rounded-none"/> 
+                <div class="overflow-hidden h-60 sm:h-72" >
+					<img :src="imagePaths[0]" class="relative left-2/4 top-2/4
+						m-auto min-h-full min-w-full transform -translate-x-1/2 
+						-translate-y-1/2"/> 				
                 </div>
                             
                 <div class="flex flex-col justify-between space-y-4 pt-2">
@@ -541,7 +611,6 @@
         data(){
             return{
                 isMoreInfoOpened: false,
-                areTagsLoaded: false,
                 currentImageIndex: 0,
                 imageEffect: null,
                 isSliderMoved: false
@@ -549,7 +618,7 @@
         },
         
         props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
-            'sold','warranty','isAvailable','description','imagePaths','productTags'],
+            'sold','warranty','isAvailable','description','imagePaths','tags'],
         template: 
           `
             <div class="grid grid-cols-1 sm:grid-cols-10 lg:grid-cols-3 gap-5 
@@ -581,7 +650,8 @@
 					lg:col-span-1 sm:px-20 md:px-0 ">
 					<div class="overflow-hidden relative"> 
 
-						<div class="overflow-hidden max-h-80 md:max-h-96 max-w-xl relative mx-auto
+						<div class="overflow-hidden max-h-80 sm:max-h-96 
+							max-w-lg sm:max-w-xl relative mx-auto
 							h-screen-40" 
 							:class="imageEffect"> 
 
@@ -590,8 +660,8 @@
 								v-if="index === currentImageIndex"    
 								:src="imagePaths[index]" 
 								class="absolute left-2/4 top-2/4 fade-in-out m-auto
-								min-h-full min-w-full"
-								style="transform: translate(-50%, -50%);"/>
+								min-h-full min-w-full transform -translate-x-1/2 
+								-translate-y-1/2"/>
 
 								<img
 								v-else-if="isSliderMoved"   
@@ -623,7 +693,7 @@
 					<transition name="slide-left">  
 					<!-- PREVIEW IMAGES -->						
 					<div v-if="isMoreInfoOpened"
-						class="grid grid-cols-5 md:grid-cols-6 gap-1 p-1">
+						class="grid grid-cols-6 gap-1 p-1">
 						<div v-for="(el, index) in imagePaths" >
 							<img
 							v-if="index === currentImageIndex"
@@ -751,15 +821,14 @@
 
                             </h5>
 
-                            <h5  v-if="areTagsLoaded"
+                            <h5 
                                 class="text-xl text-center">
                                 <span class="font-extrabold text-gray-600">
                                 Tags: </span>
                                 <span
-                                v-for="productTag in productTags">
-                                    <p v-if="productTag.productId === id"
-                                    class="inline">
-                                        {{productTag.tagName + " "}}
+                                v-for="tag in tags">
+                                    <p class="inline">
+                                        {{tag.name + " "}}
                                     </p>        
                                 </span>
                             </h5>
@@ -775,9 +844,6 @@
         methods:{
             
             moreInfoToggle(){
-                if(!this.areTagsLoaded){
-                    this.areTagsLoaded = true;
-                }
                 this.isMoreInfoOpened = !this.isMoreInfoOpened;
                 this.isSliderMoved = true;
             },

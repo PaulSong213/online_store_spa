@@ -29,10 +29,19 @@ if($isPageHasData){
     foreach ($products as $product) {
     
         $listImages = [];
+		$listTags = [];
+		
         foreach ($product->images as $images ) {
             $listImages[] = $images->file_root.$images->file_name;
         }
-
+		
+		foreach ($product->tags as $tag) {
+			$listTags[] = array(
+				'id' => $tag->id,
+				'name' => $tag->name
+			);
+		}
+		
         $listProduct[] = array(
             'id' => $product->id,
             'name' => $product->name,
@@ -46,6 +55,7 @@ if($isPageHasData){
             'warrantyDay' => $product->warranty_day,
             'pubslishedAt' => $product->created,
             'imagesPath' => $listImages,
+			'tags' => $listTags,
             'productType' => array(
                     'id' => $product->product_type->id,
                     'name' => $product->product_type->name,
@@ -64,9 +74,10 @@ if($isPageHasData){
             );
     }
     
-$items = array("product" => $listProduct,'nextPageUrl' => $nextPageLink,
-    'previousPageUrl' => $previousPageLink, 'pageInformation' => $pageInformation,
-    'requestedProductTypeName' => $requestedProductTypeName);
+$items = array('requestedProductTypeName' => $requestedProductTypeName,
+	"product" => $listProduct,'nextPageUrl' => $nextPageLink,
+    'previousPageUrl' => $previousPageLink, 'pageInformation' => $pageInformation
+    );
 
 print_r(json_encode($items));
 }

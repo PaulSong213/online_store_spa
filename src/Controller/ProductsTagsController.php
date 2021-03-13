@@ -117,10 +117,10 @@ class ProductsTagsController extends AppController
 				'contain' => ['Products', 'Tags'],
 			];
 		}else{
-			
+			$listTag = explode(",", $tag);
 			$this->paginate = [
 				'contain' => ['Products', 'Tags'],
-				'conditions' =>['ProductsTags.tag_id' => $tag],
+				'conditions' =>['ProductsTags.tag_id in' => $listTag],
 			];
 		}
         $productsTags = $this->paginate($this->ProductsTags);
