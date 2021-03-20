@@ -18,10 +18,16 @@
                 <legend><?= __('Add Image') ?></legend>
                 <?php
                     echo $this->Form->control('file_name');
-                    echo $this->Form->control('file_root');
+                    echo $this->Form->control('file_root',[
+						'value' => '/img/products/'
+					]);
                     echo $this->Form->control('product_id', ['options' => $products]);
-                    echo $this->Form->control('file_size_kb');
-                    echo $this->Form->control('file_type');
+                    echo $this->Form->control('file_size_kb',[
+						'value' => 99
+					]);
+                    echo $this->Form->control('file_type',[
+						'value' => 'image'
+					]);
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

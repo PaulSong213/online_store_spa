@@ -23,7 +23,10 @@
                 <legend><?= __('Edit Tag') ?></legend>
                 <?php
                     echo $this->Form->control('name');
-                    echo $this->Form->control('products._ids', ['options' => $products]);
+                    echo $this->Form->control('products._ids', [
+						'options' => $products,
+						'class' => 'h-96'
+					]);
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

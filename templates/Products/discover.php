@@ -79,8 +79,9 @@
             :is-available="product.isAvailable"
             :product-tags="product.tags"
             :image-paths="product.imagesPath"
-            v-on:click="toggleInlineTab(true,'','normal-product-on-tab',product,
-				null,false,product.tags.id)"
+			:is-on-tab="false"
+            v-on:click="toggleInlineTab(true,' ','normal-product-on-tab',product,
+				null,false,product.tags)"
 			
             >
             </normal-product-card>
@@ -92,7 +93,7 @@
 	<transition name="slide-fade">
     <div class="fixed bg-white w-full h-full border-2 border-gray-300 bottom-0 left-2/4
          shadow-2xl overflow-hidden max-w-screen-lg h-screen-90 transform -translate-x-1/2"
-		 
+		 id="inlineTab"
 		 
         v-if="isInlineTabOpen">
         <div class="tab-head flex justify-between shadow-2xl p-5">
@@ -168,6 +169,8 @@
         
         <div class="tab-content p-10 h-full overflow-auto small-scroll"
              v-if="inlineTabContentComponent === 'normal-product-on-tab'"
+			 id="normalProductTab"
+			 ref="normalProductTab"
              >
            
            <keep-alive>
@@ -188,28 +191,38 @@
                             warranty : inlineTabNormalProduct.warrantyDay,
                             isAvailable : inlineTabNormalProduct.isAvailable,
                             imagePaths : inlineTabNormalProduct.imagesPath,
-                            tags : inlineTabNormalProduct.tags
+                            tags : inlineTabNormalProduct.tags,
+							completeData : inlineTabNormalProduct
                         }"
                     ></component>
-					<component
-                        :is=" 'normal-product' "
-						v-for="product in productsOnRelatedTags.product"
-                        v-bind="{ 
-                            key : product.id,
-                            id : product.id,
-                            name : product.name,
-                            description : product.description,
-                            basePrice : product.basePrice,
-                            discountedPrice : product.discountedPrice,
-                            discountPercentage : product.discountPercentage,
-                            quantity : product.availableQuantity,
-                            sold : product.soldQuantity,
-                            warranty : product.warrantyDay,
-                            isAvailable : product.isAvailable,
-                            imagePaths : product.imagesPath,
-                            tags : product.tags
-                        }"
-                    ></component>
+					<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2
+						 auto-rows-max">
+					<div v-for="product in productsOnRelatedProduct.product"
+						 class="remove-if-empty h-full">	
+						<component
+							:is=" 'normal-product-card' "
+							v-if="product.id !== inlineTabNormalProduct.id"
+							v-bind="{ 
+								key : product.id,
+								id : product.id,
+								name : product.name,
+								description : product.description,
+								basePrice : product.basePrice,
+								discountedPrice : product.discountedPrice,
+								discountPercentage : product.discountPercentage,
+								quantity : product.availableQuantity,
+								sold : product.soldQuantity,
+								warranty : product.warrantyDay,
+								isAvailable : product.isAvailable,
+								imagePaths : product.imagesPath,
+								tags : product.tags,
+								isOnTab : true
+							}"
+							v-on:click="toggleInlineTab(true,' ','normal-product-on-tab',product,
+								inlineTabNormalProduct,false,product.tags)"
+						></component>
+					</div>		
+					</div>	
                 </div>    
             </keep-alive>
 			<!--LOADER-->
@@ -221,16 +234,17 @@
         </div>
         
 		<div class="tab-content p-10 h-full overflow-auto small-scroll"
+			 ref="normalProductTab"
              v-if="inlineTabContentComponent === 'normal-product-card-related-tags' "
              >
            
-           <keep-alive>
+           <keep-alive style="min-height: 105%">
                 <div class="grid grid-cols-2 md:grid-cols-3 
 					lg:grid-cols-4 gap-2">
 					
                     <component
                         :is=" 'normal-product-card' "
-						v-for="product in productsOnRelatedTags.product"
+						v-for="product in productsOnRelatedTag.product"
                         v-bind="{ 
                             key : product.id,
                             id : product.id,
@@ -244,11 +258,11 @@
                             warranty : product.warrantyDay,
                             isAvailable : product.isAvailable,
                             imagePaths : product.imagesPath,
-                            tags : product.tags
+                            tags : product.tags,
+							isOnTab : true
                         }"
-						v-on:click="toggleInlineTab(true,' ', 'normal-product-on-tab',
-								product,productsOnRelatedTags.product)"
-				
+						v-on:click="toggleInlineTab(true,' ','normal-product-on-tab',product,
+							productsOnRelatedTag.product,false,product.tags)"
                     ></component>
                 </div>    
             </keep-alive>
@@ -288,7 +302,8 @@
                 isBestSellerThumbnailCreated : false,
                 normalProduct: Array(),
                 inlineTabNormalProduct : null,
-				productsOnRelatedTags: Array()
+				productsOnRelatedTag: Array(),
+				productsOnRelatedProduct: Array()
             }
         },
         mounted(){
@@ -308,6 +323,13 @@
 					currentTabData.tabComponent = this.inlineTabContentComponent;
                     currentTabData.tabData = prevData;
 					this.inlineTabHistoryData.push(currentTabData);
+					this.scrollToTop();
+				}
+				if(willBackToHistory){
+					this.clearRelatedProductsOfProduct();
+					this.inlineTabTitle = null;
+					this.inlineTabHistoryData.splice(this.currentHistoryIndex,1);
+					this.scrollToTop();
 				}
 				this.isInlineTabOpen = willOpen;
                 if(willOpen){
@@ -317,26 +339,31 @@
                     }
                     if(tabComponentContent === 'normal-product-on-tab'){
                        this.inlineTabNormalProduct = tabProductContent;
-					   console.log(tagIdsForRelated);
-					   this.getRelatedToProducts(tagIdsForRelated);
+					   let tagIds = [];
+					   tagIdsForRelated.forEach((item,index)=>{
+						   tagIds.push(item.id);
+					   });
+					   this.getRelatedToProducts(tagIds);
                     }
                 }else{
-					this.inlineTabHistoryData = Array();
+					this.clearHistoryData();
+					this.clearRelatedProductsOfTag(); 
                     this.inlineTabAnimation = "close-tab";
                 }
 				
                 if(tabTitle){this.inlineTabTitle = tabTitle;}
                 if(tabComponentContent){this.inlineTabContentComponent = tabComponentContent;}
-                if(willBackToHistory){this.inlineTabHistoryData.splice(this.currentHistoryIndex,1);}
+                
             },
             async addNormalProduct(page = '/products/show/2'){
+				
                 let response = await $.get(page,function(data){return data });
                 let data = JSON.parse(response);
                 let product = data.product;
                 for(var i = 0; i < product.length; i++){
                     this.normalProduct.push(product[i]);
                 }
-				//this.toggleInlineTab(true,"",'normal-product-on-tab',product[1]);
+				//this.toggleInlineTab(true,"",'normal-product-on-tab',product[0]);
             },
             async addBestSellerProduct(page = '/products/show/1',isThumbnailOnCreate = false){
                 if(!this.addingNewItem && this.bestSellerNextPage !== ""){
@@ -362,42 +389,61 @@
                 this.tags = JSON.parse(response);
             },
             
-			async getRelatedToTag(tagId, tagName){
+			async getRelatedToTag(tagId, tagName,prevData = null){
 				
+				this.clearRelatedProductsOfTag();
 				this.addingNewItem = true;
-				this.productsOnRelatedTags = Array();
-				this.toggleInlineTab(true,tagName,'normal-product-card-related-tags',this.productsOnRelatedTags);
+				this.toggleInlineTab(true,tagName,'normal-product-card-related-tags',
+					this.productsOnRelatedTag,prevData);
 				let tagOnProductUrl = '/products-tags/show/' + tagId;
 				let response = await $.get(tagOnProductUrl,function(data){return data });
 				let listRelated = JSON.parse(response);
-				let seperator = ",";
-				let listProductId = null;
+				
+				let relatedProductId = [];
 				//console.log(listRelated);
-				for(var i = 0; i < listRelated.length; i++){
-					listProductId = listProductId + listRelated[i].productId + seperator;
-				}
-				//Get Full Details of Products
-				if(listProductId){
-					let specificProductUrl = '/products/show/null/' + listProductId;
-					this.getSpecificProducts(specificProductUrl);	
+				listRelated.forEach((item,index)=>{
+					relatedProductId.push(item.productId);
+				});
+
+				if(relatedProductId){
+					let specificProductUrl = '/products/show/null/' + relatedProductId.toString();
+					let products = await this.getSpecificProducts(specificProductUrl);
+					this.productsOnRelatedTag = products;
 				}
 			},
 			async getRelatedToProducts(tagIds = []){
-				console.log(tagIds);
-				let seperator = ",";
+				
+				this.clearRelatedProductsOfProduct();
+				this.addingNewItem = true;
 				let formmatedTagIds = tagIds.toString();
 				let tagOnProductUrl = '/products-tags/show/' + formmatedTagIds;
 				let response = await $.get(tagOnProductUrl,function(data){return data });
 				let listRelated = JSON.parse(response);
-				console.log(listRelated);
+				let relatedProductId = [];
+				listRelated.forEach((item, index)=>{
+					relatedProductId.push(item.productId);
+				});
+				let filteredRelatedProductId = remove_duplicates_es6(relatedProductId);
+				
+				if(filteredRelatedProductId){
+					let relatedProductUrl = '/products/show/null/' + filteredRelatedProductId.toString();
+					let products = await this.getSpecificProducts(relatedProductUrl);
+					this.productsOnRelatedProduct = products;
+					//console.log(this.productsOnRelatedProduct);
+				}
 				
 			},
 			async getSpecificProducts(url){
 				let response = await $.get( url,function(data){return data });
 				let products = JSON.parse(response);
-				this.productsOnRelatedTags = products;
 				this.addingNewItem = false;
-			}
+				return products;
+			},
+			clearRelatedProductsOfProduct(){this.productsOnRelatedProduct = Array();},
+			clearRelatedProductsOfTag(){this.productsOnRelatedTag = Array();},
+			clearHistoryData(){this.inlineTabHistoryData = Array();},
+			scrollToTop(el = '.tab-content'){$(el).scrollTop(0);}
+			
         },
 		computed: {
             currentHistoryIndex(){
@@ -418,51 +464,68 @@
 			
         props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
             'sold','warranty','isAvailable','tags','description','imagePaths',
-            'tags'],
+            'tags','completeData'],
 		
         template:
             `
             <div>
-                <div class="md:grid md:grid-cols-10 overflow-hidden gap-10 lg:gap-20
+                <div class="lg:grid lg:grid-cols-10 overflow-hidden gap-10 lg:gap-20
 					bg-yellow-900 px-4 py-8 h-screen-50">
 		
-                    <section  class="relative h-4/5 md:h-full  md:col-span-7 
-						overflow-hidden flex flex-col justify-center">
-							
-                        <img :src="imagePaths[mainImageIndex]" class="relative max-h-full block 
-							w-auto m-auto self-center bg-yellow-800"/>
-                             
-                    </section>
-                    <section class="small-scroll overflow-x-auto overflow-y-hidden 
-						md:overflow-y-auto md:overflow-x-hidden md:px-5 py-3 relative 
-						h-1/5 md:h-full md:col-span-3">
-        
-                        <div class="whitespace-nowrap h-full md:h-auto max-w-xs">
-                            
-                            <div class="select-none h-full max-w-lg overflow-hidden 
-								inline-block md:h-auto md:mx-2 md:block  cursor-pointer
-								transition-all md:w-full mb-2 mr-1"
-        
-                                v-for="(el, index) in imagePaths">
-								
-								<img :src="imagePaths[index]"
-									v-if="mainImageIndex === index"
-									v-on:click="mainImageIndex = index"
-									class="h-full md:w-full 
-									md:h-auto object-cover m-auto transition-all 
-									bg-yellow-800"
-									style="filter:blur(2px);"/> 
-									
-                                <img :src="imagePaths[index]"
-									v-else
-									v-on:click="mainImageIndex = index"
-									class="h-full md:w-full 
-									md:h-auto object-cover m-auto transition-all 
-									bg-yellow-800 transform hover:scale-105"/> 
-                                  
-                            </div>
-                            
+                    <section  class="h-full  lg:col-span-7 
+						overflow-hidden flex flex-col sm:flex-row space-y-4
+						sm:space-y-0 sm:space-x-2 max-w-4xl mx-auto">
+						
+						<div class="h-5/6 sm:h-full sm:w-5/6 p-2 relative overflow-hidden
+							max-w-2xl m-auto">
+                        <img :src="imagePaths[mainImageIndex]" 
+							class="relative left-2/4 top-2/4  m-auto
+								min-h-full min-w-full transform -translate-x-1/2 
+								-translate-y-1/2 select-none object-cover"/>
                         </div>
+						<div class="h-1/6 sm:h-full  sm:w-1/6 overflow-x-auto
+							 max-w-full">
+                        
+							<div class="whitespace-nowrap h-full overflow-y-hidden
+								sm:overflow-x-hidden sm:overflow-y-auto 
+								py-2 mx-auto small-scroll"
+								style="max-width: 80vw">
+
+								<div class="select-none cursor-pointer transition-all  
+									inline-block sm:block overflow-hidden
+									h-full sm:h-24 md:h-28 sm:w-full 
+									mx-2 sm:mx-0 sm:mb-2"
+									style="max-width: 10rem"
+									v-for="(el, index) in imagePaths">
+
+									<img :src="imagePaths[index]"
+										v-if="mainImageIndex === index"
+										v-on:click="mainImageIndex = index"
+										class="h-full w-20 sm:w-28 sm:w-full 
+										 object-cover m-auto transition-all 
+										bg-yellow-800 select-none"
+										style="filter:blur(2px);"/> 
+
+									<img :src="imagePaths[index]"
+										v-else
+										v-on:click="mainImageIndex = index"
+										class="h-full w-20 sm:w-28 sm:w-full select-none
+										 object-cover m-auto transition-all 
+										bg-yellow-800 transform hover:scale-105
+										max-w-xs"/> 
+										
+								</div>
+
+							</div>
+						
+                        </div>
+						
+                    </section>
+                    <section class="small-scroll lg:h-full lg:col-span-3 pr-6
+					     hidden  lg:block max-h-full relativer overflow-auto">
+						<h4 class="text-xl text-gray-300 text-justify">
+						{{description}} </h4>	
+							
                     </section> 
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-10  mt-5 gap-10 md:gap-5">
@@ -470,63 +533,71 @@
                         <div class="bg-yellow-300 p-4 flex justify-start
                              flex-col max-h-full">
                             <div>
-                                <h3 class="text-3xl text-left tracking-wider text-gray-800
+                                <h3 class="text-2xl  lg:text-3xl
+								text-left tracking-wider text-gray-800
 								 font-normal text-center">{{name}}</h3>
                             </div>
                             <div class="flex justify-center my-3 items-center">
                                 <h6 v-if="discountPercentage > 0"
-									class="text-lg md:text-2xl text-red-600 line-through
+									class="text-base line-through
+									  lg:text-xl text-red-600 
 								    decoration-bg-light mb-8">
 									{{'$' + basePrice}}</h6>
 										
-                                <h4 class="text-5xl md:text-6xl mx-5 text-black">
+                                <h4 class="text-4xl  lg:text-5xl 
+									mx-5 text-black">
 									{{'$' + discountedPrice}}</h4>
 										
                                 <h6 v-if="discountPercentage > 0"
-									class="discount-percentage-tag text-lg md:text-xl
-									 mb-8">
+									class="discount-percentage-tag 
+									 text-base lg:text-xl
+									 mb-8 px-2 py-1 md:px-4 md:py-2">
 									{{discountPercentage + '%'}}</h6>
 										
                             </div>
 
                             <div v-if="isAvailable" 
 								class="flex justify-around">
-                                <h5  class="btn-on-tab">
+                                <h5  class="btn-on-tab text-base  lg:text-md
+									py-5 px-6 w-max">
 									BUY NOW</h5>
 										
-                                <h5  class="btn-on-tab">
+                                <h5  class="btn-on-tab text-base  lg:text-md
+									py-5 px-6 w-max">
 										
                                     <ion-icon name="cart-outline"
-									class="text-2xl transform rotate-12">
+									class="text-base  lg:text-md transform rotate-12">
 									
                                     </ion-icon>ADD TO CART
                                 </h5>       
                             </div>
 							
 							<div v-else 
-								class="flex flex-col justify-center w-max mx-auto">
-                                <h5  class="btn-on-tab">
+								class="flex flex-col justify-center mx-auto">
+                                <h5  class="btn-on-tab text-base  lg:text-md
+									text-center w-max  py-5 px-6">
 									<ion-icon name="balloon-outline" 
-									class="text-2xl"> 
+									class="text-base  lg:text-md"> 
                                     </ion-icon>		
 									ADD TO WISHLIST</h5>
 										
-                                <h5  class="text-gray-700 tracking-wider text-xl 
-									table m-auto">
+                                <h5  class="text-gray-700 tracking-wider
+									text-base text-center">
                                     Item will be available soon
                                 </h5>       
                             </div>
 											
                         </div>
                     </section> 
-                    <section class="col-span-full md:col-span-3 grid grid-cols-2">
+                    <section class="col-span-full md:col-span-3 grid grid-cols-2 
+						md:block">
                        
-					    <h4 class="text-2xl text-gray-600">
+					    <h4 class="text-base md:text-md lg:text-lg text-gray-600">
 							<span class="text-gray-500">
                             Available: </span> {{quantity + ' items'}} 
 						</h4>
 									
-                        <h4 class="text-2xl text-gray-600">
+                        <h4 class="text-base md:text-md lg:text-lg text-gray-600">
 							<span class="text-gray-500">
 								<span class="info-title">Warranty: </span>{{warranty}}
 								<span v-if="warranty > 1"> days</span>
@@ -534,45 +605,62 @@
 							</span>	
 						</h4> 
 								
-                        <h4 class="text-2xl text-gray-600">
+                        <h4 class="text-base md:text-md lg:text-lg text-gray-600">
 						<span class="text-gray-500">
                             Sold: </span> {{sold + ' items'}}
 						</h4>
 									
-                        <h4 class="text-2xl text-gray-600">
+                        <h4 class="text-base md:text-md  lg:textlgd text-gray-600">
 							<span class="text-gray-500">
 								<span>Tags: </span>
 								<span
-									v-for="tag in tags">
-									<p 
-									class="inline">
-										{{tag.name + " "}}
-									</p>        
+									v-for="(item, index) in tags">
+									<p
+									v-on:click="getRelatedToTags(item.id, item.name,completeData)"	
+									class="inline-block hover:underline hover:text-blue-500
+										cursor-pointer active:text-purple-900 select-none">
+										{{ item.name}}
+										
+									</p>
+									<span v-if="index != tags.length-1"
+										class="select-none"> | </span>		
 								</span>
 							</span>				
                         </h4>
-                        
-                        <h4 class="text-2xl text-gray-600 col-span-full">
-						{{description}} </h4>
-										
+						<div class="col-span-full lg:hidden overflow-hidden">					
+							<div class="max-h-96 small-scroll overflow-auto w-10/12
+								md:w-full">
+								<h4 class="text-base text-gray-600">
+								{{description}} </h4>
+							</div>
+						</div>					
                     </section> 
                 </div>    
             </div>
-            `
+            `,
+		methods: {
+			getRelatedToTags(tagId, tagName,prevData){
+				this.$root.getRelatedToTag(tagId,tagName,prevData);
+			}	
+		}	
     }),
     vm.component('normal-product-card', {
+		
         props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
-            'sold','warranty','isAvailable','tags','description','imagePaths'],
+            'sold','warranty','isAvailable','tags','description','imagePaths','isOnTab'],
         template:
             `
             <div class="overflow-hidden cursor-pointer hover:shadow-lg 
                 transition-all flex flex-col justify-between
-                bg-yellow-300 p-0  max-w-sm mx-auto">
-                                    
+                bg-yellow-300 p-0  max-w-sm mx-auto h-full w-full"
+				ref="normalProductCard">
+										
                 <div class="overflow-hidden h-60 sm:h-72" >
-					<img :src="imagePaths[0]" class="relative left-2/4 top-2/4
+					<img 
+						v-if="isOnScreen"
+						:src="imagePaths[0]" class="relative left-2/4 top-2/4
 						m-auto min-h-full min-w-full transform -translate-x-1/2 
-						-translate-y-1/2"/> 				
+						-translate-y-1/2 select-none"/> 				
                 </div>
                             
                 <div class="flex flex-col justify-between space-y-4 pt-2">
@@ -606,6 +694,72 @@
                 </div>    
             </div>
             `,
+		data(){
+			return {
+				isOnScreen : false,
+				offsetTop: -1,
+			} 	
+		},							
+		created () {
+			this.currentScrollElement.addEventListener('scroll', this.handleScroll);
+			
+        },
+        unmounted() {
+			this.currentScrollElement.removeEventListener('scroll', this.handleScroll);
+			
+        },
+		mounted(){
+			this.currentScrollElement.scrollTo(0,2);
+		},
+		watch: {
+			offsetTop (val) {
+			   this.showImageIfVisible();
+			}
+		},
+		computed: {
+			currentScrollElement(){
+				let element = window;
+				if(this.isOnTab){element = this.$root.$refs.normalProductTab;}
+				return element;
+			}	
+		},
+        methods: {
+			handleScroll(event){
+				if(!this.isOnScreen){
+					if(!this.isOnTab){
+						this.offsetTop = this.currentScrollElement.pageYOffset || document.documentElement.scrollTop;
+					}else{
+						this.offsetTop = this.currentScrollElement.scrollTop;
+					}
+					
+				}else{
+					this.currentScrollElement.removeEventListener('scroll', this.handleScroll);
+			    }
+				
+			},
+			isElementInViewport(el) {
+				var rect = el.getBoundingClientRect();
+//				console.log(rect.top >= 0);
+//				console.log(rect.left >= 0);
+//				console.log("rect bot" + rect.bottom);
+//				console.log(window.innerHeight);
+//				console.log(rect.bottom <= (window.innerHeight || document.documentElement.clientHeight));
+//				console.log(rect.right <= (window.innerWidth || document.documentElement.clientWidth));
+				return (
+				  rect.top >= 0 &&
+				  rect.left >= 0 &&
+				  rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+				  rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+				);
+			  },
+			  showImageIfVisible() {
+				let element = this.$refs.normalProductCard;  
+				if (this.isElementInViewport(element)) {
+					this.isOnScreen = true;
+				}
+			}
+		},
+				
     }),
     vm.component('featured-product-card', {
         data(){
@@ -661,13 +815,13 @@
 								:src="imagePaths[index]" 
 								class="absolute left-2/4 top-2/4 fade-in-out m-auto
 								min-h-full min-w-full transform -translate-x-1/2 
-								-translate-y-1/2"/>
+								-translate-y-1/2 select-none"/>
 
 								<img
 								v-else-if="isSliderMoved"   
 								:src="imagePaths[index]" 
 								class="absolute left-2/4 top-2/4 fade-in-out m-auto
-								min-h-full min-w-full hidden"/>        
+								min-h-full min-w-full hidden select-none"/>        
 							</section>
 						</div>
 
@@ -698,13 +852,15 @@
 							<img
 							v-if="index === currentImageIndex"
 							:src="imagePaths[index]" 
-							class="opacity-60 rounded-sm transition-all"
+							class="opacity-60 rounded-sm transition-all select-none
+							min-h-full min-w-full"
 							/>
 							<img
 							v-else
 							v-on:click="currentImageIndex = index"		
 							:src="imagePaths[index]" 
-							class="hover:opacity-60 rounded-sm transition-all"
+							class="hover:opacity-60 rounded-sm transition-all select-none
+							min-h-full min-w-full"
 							/>		
 						</div>
 					</div>
@@ -867,4 +1023,10 @@
     vm.component('filter-tag',filterTag),
     
     productAppInstance = vm.mount("#discover");
+	
+	function remove_duplicates_es6(arr) {
+		let s = new Set(arr);
+		let it = s.values();
+		return Array.from(it);
+	}
 </script>

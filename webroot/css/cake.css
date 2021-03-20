@@ -1,3 +1,11 @@
+html, .tab-content {
+  scroll-behavior: smooth;
+}
+
+.remove-if-empty:empty{
+	display: none;
+}
+
 .slide-left-leave-active {
   transition: all 150ms ease;
 }

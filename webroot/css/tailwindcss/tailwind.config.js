@@ -10,7 +10,7 @@ module.exports = {
         backgroundColor: ['active'],
         fontWeight: ['group-hover'],
         position: ['hover'],
-        textColor: ['active']
+        textColor: ['active'],
     },
   },
   plugins: [
