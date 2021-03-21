@@ -135,7 +135,6 @@ class ProductsController extends AppController
                 $this->paginate = [
                     'contain' => ['Sellers', 'ProductTypes','Images','Tags'],
                     'conditions' =>['Products.product_type_id' => $productTypeId],
-                    'limit' => 2,
                     'order' => ['sold' => 'desc']
                 ];
                 $productTypes = TableRegistry::getTableLocator()->get('ProductTypes');
@@ -151,7 +150,6 @@ class ProductsController extends AppController
 				$this->paginate = [
                     'contain' => ['Sellers', 'ProductTypes','Images','Tags'],
                     'conditions' =>['Products.id in' => $productListId ],
-                    'limit' => 20,
                     'order' => ['sold' => 'desc']
                 ];
 				

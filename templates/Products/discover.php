@@ -43,7 +43,6 @@
             :is-available="product.isAvailable"
             :tags="product.tags"
             :image-paths="product.imagesPath"
-            :next-page="bestSellerNextPage"
             >
             </featured-product-card>
         </div>
@@ -59,13 +58,13 @@
     </div>
     
     
-<!--    NORMAL PRODUCT  -->
-    <div class="normal-products content my-10">
+<!--    DISCOVER PRODUCT  -->
+    <div class="content my-10">
         <div class="mt-20 grid grid-cols-2 md:grid-cols-3 
              lg:grid-cols-4 gap-2">
             
-            <normal-product-card
-            v-for="product in normalProduct"
+            <discover-product-card
+            v-for="product in discoverProduct"
             :key="product.id"
             :id="product.id"
             :name="product.name"
@@ -80,11 +79,11 @@
             :product-tags="product.tags"
             :image-paths="product.imagesPath"
 			:is-on-tab="false"
-            v-on:click="toggleInlineTab(true,' ','normal-product-on-tab',product,
+            v-on:click="toggleInlineTab(true,' ','discover-product-on-tab',product,
 				null,false,product.tags)"
 			
             >
-            </normal-product-card>
+            </discover-product-card>
             
         </div>
     </div>
@@ -129,7 +128,7 @@
         <div class="tab-content p-10 h-full overflow-auto small-scroll"
              
              v-if="inlineTabContentComponent === 'featured-product-card'"
-             v-on:scroll.passive="addBestSellerProduct(bestSellerNextPage)">
+             v-on:scroll.passive="addBestSellerProduct(requestPageInformations['Best Sellers'].nextPageUrl)">
             <keep-alive>
                 <div class="items-discover grid grids-col-1 gap-10 py-10 mb-10">
                     <component
@@ -161,38 +160,37 @@
                     v-if="addingNewItem">
                 </circle-loader>
                 <reached-end-message
-                    v-if="!bestSellerNextPage"
+                    v-if="requestPageInformations['Best Sellers'].nextPageUrl === '' "
                     message="Reached End. There are more items to discover!">
                 </reached-end-message> 
             </div>
         </div>
         
         <div class="tab-content p-10 h-full overflow-auto small-scroll"
-             v-if="inlineTabContentComponent === 'normal-product-on-tab'"
-			 id="normalProductTab"
-			 ref="normalProductTab"
+             v-if="inlineTabContentComponent === 'discover-product-on-tab'"
+			 ref="discoverProductTab"
              >
            
            <keep-alive>
                 <div class="items-discover grid grids-col-1 gap-10 py-10 mb-10">
 
                     <component
-                        :is=" 'normal-product-on-tab' "
+                        :is=" 'discover-product-on-tab' "
                         v-bind="{ 
-                            key : inlineTabNormalProduct.id,
-                            id : inlineTabNormalProduct.id,
-                            name : inlineTabNormalProduct.name,
-                            description : inlineTabNormalProduct.description,
-                            basePrice : inlineTabNormalProduct.basePrice,
-                            discountedPrice : inlineTabNormalProduct.discountedPrice,
-                            discountPercentage : inlineTabNormalProduct.discountPercentage,
-                            quantity : inlineTabNormalProduct.availableQuantity,
-                            sold : inlineTabNormalProduct.soldQuantity,
-                            warranty : inlineTabNormalProduct.warrantyDay,
-                            isAvailable : inlineTabNormalProduct.isAvailable,
-                            imagePaths : inlineTabNormalProduct.imagesPath,
-                            tags : inlineTabNormalProduct.tags,
-							completeData : inlineTabNormalProduct
+                            key : inlineTabDiscoverProduct.id,
+                            id : inlineTabDiscoverProduct.id,
+                            name : inlineTabDiscoverProduct.name,
+                            description : inlineTabDiscoverProduct.description,
+                            basePrice : inlineTabDiscoverProduct.basePrice,
+                            discountedPrice : inlineTabDiscoverProduct.discountedPrice,
+                            discountPercentage : inlineTabDiscoverProduct.discountPercentage,
+                            quantity : inlineTabDiscoverProduct.availableQuantity,
+                            sold : inlineTabDiscoverProduct.soldQuantity,
+                            warranty : inlineTabDiscoverProduct.warrantyDay,
+                            isAvailable : inlineTabDiscoverProduct.isAvailable,
+                            imagePaths : inlineTabDiscoverProduct.imagesPath,
+                            tags : inlineTabDiscoverProduct.tags,
+							completeData : inlineTabDiscoverProduct
                         }"
                     ></component>
 					<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2
@@ -200,8 +198,8 @@
 					<div v-for="product in productsOnRelatedProduct.product"
 						 class="remove-if-empty h-full">	
 						<component
-							:is=" 'normal-product-card' "
-							v-if="product.id !== inlineTabNormalProduct.id"
+							:is=" 'discover-product-card' "
+							v-if="product.id !== inlineTabDiscoverProduct.id"
 							v-bind="{ 
 								key : product.id,
 								id : product.id,
@@ -218,8 +216,8 @@
 								tags : product.tags,
 								isOnTab : true
 							}"
-							v-on:click="toggleInlineTab(true,' ','normal-product-on-tab',product,
-								inlineTabNormalProduct,false,product.tags)"
+							v-on:click="toggleInlineTab(true,' ','discover-product-on-tab',product,
+								inlineTabDiscoverProduct,false,product.tags)"
 						></component>
 					</div>		
 					</div>	
@@ -234,16 +232,17 @@
         </div>
         
 		<div class="tab-content p-10 h-full overflow-auto small-scroll"
-			 ref="normalProductTab"
-             v-if="inlineTabContentComponent === 'normal-product-card-related-tags' "
+             v-if="inlineTabContentComponent === 'discover-product-card-related-tags' "
+			 ref="discoverProductTab"
              >
            
-           <keep-alive style="min-height: 105%">
                 <div class="grid grid-cols-2 md:grid-cols-3 
 					lg:grid-cols-4 gap-2">
 					
+					<keep-alive>
                     <component
-                        :is=" 'normal-product-card' "
+						
+                        :is=" 'discover-product-card' "
 						v-for="product in productsOnRelatedTag.product"
                         v-bind="{ 
                             key : product.id,
@@ -261,17 +260,19 @@
                             tags : product.tags,
 							isOnTab : true
                         }"
-						v-on:click="toggleInlineTab(true,' ','normal-product-on-tab',product,
+						v-on:click="toggleInlineTab(true,' ','discover-product-on-tab',product,
 							productsOnRelatedTag.product,false,product.tags)"
                     ></component>
-                </div>    
-            </keep-alive>
+					</keep-alive>
+                </div>
+
 			<!--LOADER-->
 			<div class="pt-10 pb-20">
                 <circle-loader
                     v-if="addingNewItem">
                 </circle-loader>
             </div>
+			
         </div>
 		
     </div>
@@ -289,9 +290,8 @@
             return {
                 bestSellerTitle: null,
                 bestSellerProducts: Array(),
-                bestSellerProductsThumbnail: Array(),
-                bestSellerNextPage: null,
-                bestSellerPrevPage: null,
+                bestSellerProductsThumbnail: Array(), //items that will show on home which will act as static object (will not change state)
+                requestPageInformations: Array(), //consist of request url of next/previous page and page info
                 tags: null,
                 isInlineTabOpen: false,
                 inlineTabAnimation: "close-tab",
@@ -300,23 +300,24 @@
 				inlineTabHistoryData: Array(),
                 addingNewItem : false,
                 isBestSellerThumbnailCreated : false,
-                normalProduct: Array(),
-                inlineTabNormalProduct : null,
+                discoverProduct: Array(),
+                inlineTabDiscoverProduct : null,
 				productsOnRelatedTag: Array(),
 				productsOnRelatedProduct: Array()
             }
         },
         mounted(){
             this.addTagList(),
-            this.addBestSellerProduct('/products/show/1', true),
-            this.addNormalProduct()
+            this.addBestSellerProduct('/products/show/1?limit=2', true),
+            this.addDiscoverProduct('/products/show/2')
         },
                                    
         methods:{
-			
             toggleInlineTab(willOpen = true,tabTitle, tabComponentContent = null,
                 tabProductContent = null,prevData = null,willBackToHistory = false,
 				tagIdsForRelated = []){
+					
+				
 				if(prevData){
 					var currentTabData = Array();
 					currentTabData.tabTitle = this.inlineTabTitle;
@@ -335,10 +336,12 @@
                 if(willOpen){
                     this.inlineTabAnimation = "open-tab";
                     if(tabComponentContent === 'featured-product-card'){
-                       this.addBestSellerProduct(this.bestSellerNextPage);
+						if(this.requestPageInformations['Best Sellers']){
+							this.addBestSellerProduct(this.requestPageInformations['Best Sellers'].nextPageUrl);
+						}
                     }
-                    if(tabComponentContent === 'normal-product-on-tab'){
-                       this.inlineTabNormalProduct = tabProductContent;
+                    if(tabComponentContent === 'discover-product-on-tab'){
+                       this.inlineTabDiscoverProduct = tabProductContent;
 					   let tagIds = [];
 					   tagIdsForRelated.forEach((item,index)=>{
 						   tagIds.push(item.id);
@@ -350,23 +353,28 @@
 					this.clearRelatedProductsOfTag(); 
                     this.inlineTabAnimation = "close-tab";
                 }
-				
+				if(tabComponentContent){this.inlineTabContentComponent = tabComponentContent;}
                 if(tabTitle){this.inlineTabTitle = tabTitle;}
-                if(tabComponentContent){this.inlineTabContentComponent = tabComponentContent;}
                 
             },
-            async addNormalProduct(page = '/products/show/2'){
-				
+            async addDiscoverProduct(page = '/products/show/2'){
                 let response = await $.get(page,function(data){return data });
                 let data = JSON.parse(response);
                 let product = data.product;
                 for(var i = 0; i < product.length; i++){
-                    this.normalProduct.push(product[i]);
+                    this.discoverProduct.push(product[i]);
                 }
-				//this.toggleInlineTab(true,"",'normal-product-on-tab',product[0]);
+				//this.toggleInlineTab(true,"",'discover-product-on-tab',product[0]);
             },
-            async addBestSellerProduct(page = '/products/show/1',isThumbnailOnCreate = false){
-                if(!this.addingNewItem && this.bestSellerNextPage !== ""){
+            async addBestSellerProduct(page = null,isThumbnailOnCreate = false){
+				
+				let hasBestSellerNextPage = page !== "";
+				
+				if(this.requestPageInformations['Best Sellers']){
+					hasBestSellerNextPage = this.requestPageInformations['Best Sellers'].nextPageUrl !== "";
+				}
+				
+                if(!this.addingNewItem && hasBestSellerNextPage){
                     this.addingNewItem = true;
                     let response = await $.get(page,function(data){return data });
                     let data = JSON.parse(response);
@@ -376,8 +384,11 @@
                     for(var i = 0; i < product.length; i++){
                         bestSellerData.push(product[i]);
                     }
-                    this.bestSellerNextPage = data.nextPageUrl;
-                    this.bestSellerPrevPage = data.previousPageUrl;
+					var requestInformation = Array();
+					requestInformation.nextPageUrl = data.nextPageUrl;
+					requestInformation.previousPageUrl = data.previousPageUrl;
+					requestInformation.pageInformation = data.pageInformation;
+					this.requestPageInformations[data.requestedProductTypeName] = requestInformation;
                     this.bestSellerTitle = data.requestedProductTypeName;
                     this.addingNewItem = false;
                     if(isThumbnailOnCreate){this.isBestSellerThumbnailCreated = true}
@@ -390,10 +401,9 @@
             },
             
 			async getRelatedToTag(tagId, tagName,prevData = null){
-				
 				this.clearRelatedProductsOfTag();
 				this.addingNewItem = true;
-				this.toggleInlineTab(true,tagName,'normal-product-card-related-tags',
+				this.toggleInlineTab(true,tagName,'discover-product-card-related-tags',
 					this.productsOnRelatedTag,prevData);
 				let tagOnProductUrl = '/products-tags/show/' + tagId;
 				let response = await $.get(tagOnProductUrl,function(data){return data });
@@ -454,7 +464,7 @@
     vm.component('featured-product-loader',featuredProductLoader),
     vm.component('circle-loader',circleLoader),
     vm.component('reached-end-message',reachedEndMessage),
-    vm.component('normal-product-on-tab',{
+    vm.component('discover-product-on-tab',{
 		
 		data(){
 			return{
@@ -616,7 +626,7 @@
 								<span
 									v-for="(item, index) in tags">
 									<p
-									v-on:click="getRelatedToTags(item.id, item.name,completeData)"	
+									v-on:click="this.$root.getRelatedToTag(item.id, item.name,completeData)"	
 									class="inline-block hover:underline hover:text-blue-500
 										cursor-pointer active:text-purple-900 select-none">
 										{{ item.name}}
@@ -638,13 +648,9 @@
                 </div>    
             </div>
             `,
-		methods: {
-			getRelatedToTags(tagId, tagName,prevData){
-				this.$root.getRelatedToTag(tagId,tagName,prevData);
-			}	
-		}	
+		
     }),
-    vm.component('normal-product-card', {
+    vm.component('discover-product-card', {
 		
         props: ['id','name','basePrice','discountedPrice','discountPercentage','quantity',
             'sold','warranty','isAvailable','tags','description','imagePaths','isOnTab'],
@@ -653,7 +659,7 @@
             <div class="overflow-hidden cursor-pointer hover:shadow-lg 
                 transition-all flex flex-col justify-between
                 bg-yellow-300 p-0  max-w-sm mx-auto h-full w-full"
-				ref="normalProductCard">
+				ref="discoverProductCard">
 										
                 <div class="overflow-hidden h-60 sm:h-72" >
 					<img 
@@ -697,45 +703,35 @@
 		data(){
 			return {
 				isOnScreen : false,
-				offsetTop: -1,
+				
 			} 	
 		},							
-		created () {
-			this.currentScrollElement.addEventListener('scroll', this.handleScroll);
-			
-        },
         unmounted() {
-			this.currentScrollElement.removeEventListener('scroll', this.handleScroll);
-			
-        },
-		mounted(){
-			this.currentScrollElement.scrollTo(0,2);
-		},
-		watch: {
-			offsetTop (val) {
-			   this.showImageIfVisible();
+			if(this.currentScrollElement){
+			this.currentScrollElement.removeEventListener('scroll', this.checkVisibilityScroll);
 			}
 		},
+		mounted(){
+			if(this.currentScrollElement){
+			this.currentScrollElement.addEventListener('scroll', this.checkVisibilityScroll);
+			}
+			this.checkVisibilityScroll();
+		},
+		
 		computed: {
 			currentScrollElement(){
 				let element = window;
-				if(this.isOnTab){element = this.$root.$refs.normalProductTab;}
+				if(this.isOnTab){element = this.$root.$refs.discoverProductTab;}
 				return element;
 			}	
 		},
         methods: {
-			handleScroll(event){
+			checkVisibilityScroll(event){
 				if(!this.isOnScreen){
-					if(!this.isOnTab){
-						this.offsetTop = this.currentScrollElement.pageYOffset || document.documentElement.scrollTop;
-					}else{
-						this.offsetTop = this.currentScrollElement.scrollTop;
-					}
-					
+					this.isOnScreen = this.isElementInViewport(this.$refs.discoverProductCard); 
 				}else{
 					this.currentScrollElement.removeEventListener('scroll', this.handleScroll);
 			    }
-				
 			},
 			isElementInViewport(el) {
 				var rect = el.getBoundingClientRect();
@@ -752,12 +748,6 @@
 				  rect.right <= (window.innerWidth || document.documentElement.clientWidth)
 				);
 			  },
-			  showImageIfVisible() {
-				let element = this.$refs.normalProductCard;  
-				if (this.isElementInViewport(element)) {
-					this.isOnScreen = true;
-				}
-			}
 		},
 				
     }),
@@ -982,11 +972,17 @@
                                 <span class="font-extrabold text-gray-600">
                                 Tags: </span>
                                 <span
-                                v-for="tag in tags">
-                                    <p class="inline">
-                                        {{tag.name + " "}}
-                                    </p>        
+									v-for="(item, index) in tags">
+                                    <p
+									v-on:click="this.$root.getRelatedToTag(item.id, item.name)"	
+									class="inline-block hover:underline hover:text-blue-500
+										cursor-pointer active:text-purple-900 select-none">
+										{{ item.name}}
+									</p>
+									<span v-if="index != tags.length-1"
+										class="select-none"> | </span>		
                                 </span>
+											
                             </h5>
                             </div>
                         </section>
