@@ -84,7 +84,16 @@
 			
             >
             </discover-product-card>
-            
+        </div>
+		<!--LOADER-->
+		<div class="pt-10 pb-20">
+            <circle-loader
+                v-if="isAddingHomeItem">
+            </circle-loader>
+            <reached-end-message
+                v-if="isDiscoverProductReacheadEnd"
+                message="Reached End.">
+            </reached-end-message> 
         </div>
     </div>
     
@@ -126,11 +135,11 @@
         </div>
         
         <div class="tab-content p-10 h-full overflow-auto small-scroll"
-             
-             v-if="inlineTabContentComponent === 'featured-product-card'"
-             v-on:scroll.passive="addBestSellerProduct(requestPageInformations['Best Sellers'].nextPageUrl)">
+             ref="bestSellerProductTab"
+             v-if="inlineTabContentComponent === 'featured-product-card'">
             <keep-alive>
-                <div class="items-discover grid grids-col-1 gap-10 py-10 mb-10">
+                <div class="items-discover grid grids-col-1 gap-10 py-10 mb-10"
+					 ref="bestSellerProductTabGrid">
                     <component
                         :is=" 'featured-product-card' "
                         v-for="product in bestSellerProducts"
@@ -160,7 +169,7 @@
                     v-if="addingNewItem">
                 </circle-loader>
                 <reached-end-message
-                    v-if="requestPageInformations['Best Sellers'].nextPageUrl === '' "
+                    v-if="isBestSellersProductReacheadEnd"
                     message="Reached End. There are more items to discover!">
                 </reached-end-message> 
             </div>
@@ -299,6 +308,7 @@
                 inlineTabContentComponent: null,
 				inlineTabHistoryData: Array(),
                 addingNewItem : false,
+				isAddingHomeItem : false,
                 isBestSellerThumbnailCreated : false,
                 discoverProduct: Array(),
                 inlineTabDiscoverProduct : null,
@@ -308,11 +318,48 @@
         },
         mounted(){
             this.addTagList(),
-            this.addBestSellerProduct('/products/show/1?limit=2', true),
-            this.addDiscoverProduct('/products/show/2')
+            this.addBestSellerProduct('/products/show/1?limit=10', true),
+            this.addDiscoverProduct('/products/show/2'),
+			window.addEventListener('scroll', this.handleScrollDiscover);	
+		
         },
-                                   
+        created () {
+          
+        },
+        unmounted() {
+          window.removeEventListener('scroll', this.handleScrollDiscover); 
+       },
+		
         methods:{
+			
+			handleScrollBestSellerTab(event){
+				//almost bottom is triggered when the scroll is at 70% (scrollContainer.offsetHeight * 0.7)
+				// of the max hieght of grid container when product cards ia attached
+				let scrollContainer = this.$refs.bestSellerProductTab;
+				let mainContainer = this.$refs.bestSellerProductTabGrid
+				let almostBottomOfContainer = scrollContainer.scrollTop + (scrollContainer.innerHeight || scrollContainer.offsetHeight) > (mainContainer.offsetHeight || mainContainer.innerHeight) * 0.7;
+				if(almostBottomOfContainer && !this.addingNewItem){
+					console.log('ALMOST');
+					if(this.getItemNextPage('Best Sellers') !== ""){
+						this.addBestSellerProduct(this.getItemNextPage('Best Sellers'));
+					}else{
+						this.$refs.bestSellerProductTab.removeEventListener('scroll',this.handleScrollBestSellerTab);
+					}
+				}
+			},
+			handleScrollDiscover(event) {
+				
+                let almostBottomOfWindow = document.documentElement.scrollTop + window.innerHeight > document.documentElement.offsetHeight * 0.7;
+				//almost bottom = scroll is at position of more 75% of total scoll size
+				if(this.requestPageInformations['Discover']){
+					let nextPage = this.requestPageInformations['Discover'].nextPageUrl;
+					if (almostBottomOfWindow && nextPage !== "" && !this.isAddingHomeItem) {
+						this.addDiscoverProduct(nextPage);
+					}
+				}
+                
+            },
+			
             toggleInlineTab(willOpen = true,tabTitle, tabComponentContent = null,
                 tabProductContent = null,prevData = null,willBackToHistory = false,
 				tagIdsForRelated = []){
@@ -339,14 +386,19 @@
 						if(this.requestPageInformations['Best Sellers']){
 							this.addBestSellerProduct(this.requestPageInformations['Best Sellers'].nextPageUrl);
 						}
+						
                     }
+					
+					//get related products of current item
                     if(tabComponentContent === 'discover-product-on-tab'){
                        this.inlineTabDiscoverProduct = tabProductContent;
 					   let tagIds = [];
 					   tagIdsForRelated.forEach((item,index)=>{
 						   tagIds.push(item.id);
 					   });
-					   this.getRelatedToProducts(tagIds);
+					   if(tagIds.length > 0){
+					      this.getRelatedToProducts(tagIds);
+					   }
                     }
                 }else{
 					this.clearHistoryData();
@@ -358,12 +410,15 @@
                 
             },
             async addDiscoverProduct(page = '/products/show/2'){
+				this.isAddingHomeItem = true;
                 let response = await $.get(page,function(data){return data });
                 let data = JSON.parse(response);
                 let product = data.product;
                 for(var i = 0; i < product.length; i++){
                     this.discoverProduct.push(product[i]);
                 }
+				this.addRequestInformation(data);
+				this.isAddingHomeItem = false;
 				//this.toggleInlineTab(true,"",'discover-product-on-tab',product[0]);
             },
             async addBestSellerProduct(page = null,isThumbnailOnCreate = false){
@@ -375,31 +430,44 @@
 				}
 				
                 if(!this.addingNewItem && hasBestSellerNextPage){
+					
                     this.addingNewItem = true;
                     let response = await $.get(page,function(data){return data });
                     let data = JSON.parse(response);
                     let product = data.product;
+					
+					//by default item will added to 'bestSellerProduct' which are on the inline tab
+					//but if isThumbnailOnCreate is true then the items will be added to 'bestSellerProductsThumbnail'
+					//this method makes seperation of thumbnail(static) and inlinetab product (added dynamicaly)
                     let bestSellerData = this.bestSellerProducts;
                     if(isThumbnailOnCreate){bestSellerData = this.bestSellerProductsThumbnail;}
                     for(var i = 0; i < product.length; i++){
                         bestSellerData.push(product[i]);
                     }
-					var requestInformation = Array();
-					requestInformation.nextPageUrl = data.nextPageUrl;
-					requestInformation.previousPageUrl = data.previousPageUrl;
-					requestInformation.pageInformation = data.pageInformation;
-					this.requestPageInformations[data.requestedProductTypeName] = requestInformation;
+					this.addRequestInformation(data);
                     this.bestSellerTitle = data.requestedProductTypeName;
                     this.addingNewItem = false;
-                    if(isThumbnailOnCreate){this.isBestSellerThumbnailCreated = true}
+                    if(isThumbnailOnCreate){
+						this.isBestSellerThumbnailCreated = true;
+					}else{
+						this.$refs.bestSellerProductTab.addEventListener('scroll', this.handleScrollBestSellerTab);
+					}
+					
                 }
-                
+				
             },
+			addRequestInformation(requestData){
+				var requestInformation = Array();
+				requestInformation.nextPageUrl = requestData.nextPageUrl;
+				requestInformation.previousPageUrl = requestData.previousPageUrl;
+				requestInformation.pageInformation = requestData.pageInformation;
+				this.requestPageInformations[requestData.requestedProductTypeName] = requestInformation;
+				
+			},
             async addTagList(){
                 let response = await $.get('/tags/show',function(data){return data });
                 this.tags = JSON.parse(response);
             },
-            
 			async getRelatedToTag(tagId, tagName,prevData = null){
 				this.clearRelatedProductsOfTag();
 				this.addingNewItem = true;
@@ -452,14 +520,35 @@
 			clearRelatedProductsOfProduct(){this.productsOnRelatedProduct = Array();},
 			clearRelatedProductsOfTag(){this.productsOnRelatedTag = Array();},
 			clearHistoryData(){this.inlineTabHistoryData = Array();},
-			scrollToTop(el = '.tab-content'){$(el).scrollTop(0);}
+			scrollToTop(el = '.tab-content'){$(el).scrollTop(0);},
+			isItemReachedEnd(requestItem){
+				let isReachedEnd = false;
+				if(this.requestPageInformations[requestItem]){
+					isReachedEnd = this.requestPageInformations[requestItem].nextPageUrl === "";
+				}
+				return isReachedEnd;
+			},
+			getItemNextPage(requestItem){
+				let itemNextPage = "";
+				if(this.requestPageInformations[requestItem]){
+					itemNextPage = this.requestPageInformations[requestItem].nextPageUrl;
+				}
+				return itemNextPage;
+			}
 			
         },
 		computed: {
             currentHistoryIndex(){
 				return this.inlineTabHistoryData.length - 1;
+			},
+			isDiscoverProductReacheadEnd(){
+				return this.isItemReachedEnd("Discover");
+			},
+			isBestSellersProductReacheadEnd(){
+				return this.isItemReachedEnd("Best Sellers");
 			}
         },
+		
     })
     vm.component('featured-product-loader',featuredProductLoader),
     vm.component('circle-loader',circleLoader),
@@ -730,11 +819,12 @@
 				if(!this.isOnScreen){
 					this.isOnScreen = this.isElementInViewport(this.$refs.discoverProductCard); 
 				}else{
-					this.currentScrollElement.removeEventListener('scroll', this.handleScroll);
+					this.currentScrollElement.removeEventListener('scroll', this.handleScrollDiscover);
 			    }
 			},
 			isElementInViewport(el) {
 				var rect = el.getBoundingClientRect();
+				let advanceGap = 250;
 //				console.log(rect.top >= 0);
 //				console.log(rect.left >= 0);
 //				console.log("rect bot" + rect.bottom);
@@ -742,9 +832,9 @@
 //				console.log(rect.bottom <= (window.innerHeight || document.documentElement.clientHeight));
 //				console.log(rect.right <= (window.innerWidth || document.documentElement.clientWidth));
 				return (
-				  rect.top >= 0 &&
+				  rect.top >= advanceGap &&
 				  rect.left >= 0 &&
-				  rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+				  rect.bottom <= (window.innerHeight + advanceGap || document.documentElement.clientHeight + advanceGap) &&
 				  rect.right <= (window.innerWidth || document.documentElement.clientWidth)
 				);
 			  },
