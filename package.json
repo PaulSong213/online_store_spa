@@ -1,0 +1,54 @@
+{
+  "name": "online_store",
+  "version": "1.0.0",
+  "description": "init",
+  "main": "dist/my-library-name.cjs.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.2.5",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.2",
+    "nodemon": "^2.0.7",
+    "postcss": "^8.2.8",
+    "tailwindcss": "^2.0.4",
+    "vue-ionicons": "^3.0.5",
+    "vue-template-compiler": "^2.6.12"
+  },
+  "devDependencies": {
+    "@types/webpack-env": "^1.16.0",
+    "@vue/compiler-sfc": "^3.0.7",
+    "cross-env": "^7.0.3",
+    "laravel-mix": "^6.0.0-beta.17",
+    "laravel-mix-vue3": "^0.7.0",
+    "vue": "^3.0.7",
+    "vue-loader": "^16.1.2"
+  },
+  "scripts": {
+    "development": "mix",
+    "watch": "mix watch",
+    "watch-poll": "mix watch -- --watch-options-poll=1000",
+    "hot": "mix watch --hot",
+    "production": "mix --production"
+  },
+  "module": "dist/my-library-name.esm.js",
+  "files": [
+    "dist/"
+  ],
+  "unpkg": "dist/my-library-name.global.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://PaulSong213@github.com/PaulSong213/online_store_spa.git"
+  },
+  "keywords": [
+    "online",
+    "store"
+  ],
+  "author": "songalia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PaulSong213/online_store_spa/issues"
+  },
+  "homepage": "https://github.com/PaulSong213/online_store_spa#readme"
+}

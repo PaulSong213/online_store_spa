@@ -26,6 +26,16 @@ html, .tab-content {
   margin-bottom: -50%;
 }
 
+.inline-tab-slide-fade-leave-active {
+  transition: all 250ms ease-in;
+}
+
+
+.inline-tab-slide-fade-leave-to {
+  opacity: 0;
+  margin-bottom: -50%;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: all 150ms ease-out;
