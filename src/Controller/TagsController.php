@@ -107,6 +107,6 @@ class TagsController extends AppController
     
     public function show(){
         $tags = $this->paginate($this->Tags);
-        print_r(json_encode($tags));
+        $this->set(compact('tags'));
     }
 }

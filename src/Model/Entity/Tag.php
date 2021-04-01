@@ -26,6 +26,7 @@ class Tag extends Entity
      */
     protected $_accessible = [
         'name' => true,
+        'logo_path' => true,
         'products' => true,
     ];
 }

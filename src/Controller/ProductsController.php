@@ -114,20 +114,15 @@ class ProductsController extends AppController
         return $this->redirect(['action' => 'index']);
     }
     
-    public function discover()
+    public function discover($productId = null)
     {
-        $this->paginate = [
-            'contain' => ['Sellers', 'ProductTypes'],
-        ];
-        $products = $this->paginate($this->Products);
-
-        $this->set(compact('products'));
+        
     }
     
     public function show($productTypeId = 0,$productRequestList = ""){
         $isPageHasData = true;
 		
-		$productListId = explode(",", $productRequestList);
+	$productListId = explode(",", $productRequestList);
 		
         try {
             $requestedProductTypeName = "allProducts";
@@ -167,7 +162,6 @@ class ProductsController extends AppController
            $isPageHasData = false;
            $this->set(compact('isPageHasData'));
         }
-        
         
     }
     

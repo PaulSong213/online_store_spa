@@ -14,7 +14,7 @@
  * @var \App\View\AppView $this
  */
 
-$cakeDescription = 'CakePHP: the rapid development php framework';
+$cakeDescription = 'Paul Shop';
 ?>
 <!DOCTYPE html>
 <html>
@@ -37,7 +37,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
 	
-	<script src="/public/js/app.js" type="module"></script>
+    <script src="/public/js/app.js" type="module"></script>
 	
 </head>
 <body>

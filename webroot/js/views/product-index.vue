@@ -1,9 +1,5 @@
 <template>
 	
-	<div>
-		index view
-	</div>
-	<circle-loader></circle-loader>
 </template>
 
 <script>

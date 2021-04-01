@@ -8,6 +8,8 @@ import ReachedEndMessage from './components/reached-end-message.vue';
 import FeaturedProductCard from './components/featured-product-card.vue';
 import DiscoverProductCard from './components/discover-product-card.vue';
 import DiscoverProductOnTab from './components/discover-product-on-tab.vue';
+import ItemNotFound from './components/item-not-found.vue';
+import HeroImages from './components/hero-images.vue';
 
 //views
 import App from './App.vue';
@@ -28,6 +30,8 @@ const app = createApp(App)
 		.component('reached-end-message', ReachedEndMessage)
 		.component('circle-loader', CircleLoader)
 		.component('filter-tag', FilterTag)
+                .component('item-not-found', ItemNotFound)
+                .component('hero-images', HeroImages)
 		.component('featured-product-card', FeaturedProductCard)
 		.component('discover-product-card', DiscoverProductCard)
 		.component('discover-product-on-tab', DiscoverProductOnTab)

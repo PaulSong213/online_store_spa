@@ -67,7 +67,13 @@ class TagsTable extends Table
             ->maxLength('name', 64)
             ->requirePresence('name', 'create')
             ->notEmptyString('name');
-
+        
+        $validator
+            ->scalar('logo_path')
+            ->maxLength('logo_path', 64)
+            ->requirePresence('logo_path', 'create')
+            ->notEmptyString('logo_path');
+        
         return $validator;
     }
 }

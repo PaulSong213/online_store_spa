@@ -1,0 +1,2 @@
+https://ismail9k.github.io/vue3-carousel/getting-started.html
+https://laravel-mix.com/docs/6.0/vue

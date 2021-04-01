@@ -78,7 +78,7 @@ export default {
 			checkVisibilityScroll(event){
 				if(!this.isOnScreen){
 					this.isOnScreen = this.isElementInViewport(this.$refs.discoverProductCard); 
-					console.log('isOnSCreen :' + this.isElementInViewport(this.$refs.discoverProductCard));
+					//console.log('isOnSCreen :' + this.isElementInViewport(this.$refs.discoverProductCard));
 				}else{
 					this.currentScrollElement.removeEventListener('scroll', this.checkVisibilityScroll);
 			    }
