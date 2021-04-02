@@ -1,41 +1,61 @@
 <template>
-  <carousel :items-to-show="1" :wrap-around="true"
-    class="h-screen-60 rounded-md" :current-slide="0">
-    <slide v-for="image in heroImages" class="bg-red-900 h-screen-50 "
-           >
-        <img :src="image" alt="thumbnail" 
-            class="min-h-full w-full object-cover ">
-    </slide>
-
-    <template #addons>
-      
-      <pagination />
-      
-    </template>
-  </carousel>
+<vueper-slides
+    v-if="heroImages.length > 1"
+    class="bg-gradient-to-r from-red-900 via-red-700 to-red-900
+        rounded-md overflow-hidden"
+    lazy lazy-load-on-drag
+    autoplay
+    :pause-on-hover="true"
+    :dragging-distance="50"
+    :breakpoints="breakpoints"
+    :gap="1"
+    :arrows="false"
+    :slide-ratio="2/5"
+    >
+    <vueper-slide v-for="(slide, i) in heroImages"
+      :key="i"
+      :image="slide.imagePath"
+      :content="slide.content"
+     />
+</vueper-slides>
 </template>
 
+<style>
+    .vueperslides__bullet:hover{
+        background-color: transparent;
+    }
+    .vueperslides__bullet:focus{
+        background-color: transparent;
+    }
+</style>
 <script>
-// If you are using PurgeCSS, make sure to whitelist the carousel CSS classes
-import 'vue3-carousel/dist/carousel.css';
-import { Carousel, Slide, Pagination } from 'vue3-carousel';
+
+
 
 export default {
     name: 'App',
-    components: {
-      Carousel,
-      Slide,
-      Pagination,
-
-    },
     data() {
         return {
             heroImages: Array(),
-            currentSlide: 0,
+            pauseOnHover: true,
+            autoPlaying: true,
+            internalAutoPlaying: false,
+            breakpoints: {
+                1200: {
+                  slideRatio: 2 / 5
+                },
+                750: {
+                   slideRatio: 3 / 5
+                },
+                600: {
+                  slideRatio: 4/5,
+                },
+                
+            },
         }
     },
     mounted(){
-        this.getHeroImages();
+        this.getHeroImages()
     },
     methods: {
         async getHeroImages(url = "/thumbnails/show/1"){
@@ -45,7 +65,8 @@ export default {
             if(data.length > 0){
                 let images = data[0].images;
                 for(var i = 0; i <  images.length; i++){
-                    this.heroImages[i] =  images[i].filePath;
+                    let heroImage = {imagePath: images[i].filePath, content: ""}
+                    this.heroImages.push(heroImage);
                 }
             }
         }

@@ -31,7 +31,7 @@ if($isPageHasData){
         $listImages = [];
 		$listTags = [];
 		
-        foreach ($product->images as $images ) {
+        foreach ($product->product_images as $images ) {
             $listImages[] = $images->file_root.$images->file_name;
         }
 		

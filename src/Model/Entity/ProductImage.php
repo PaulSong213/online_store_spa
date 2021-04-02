@@ -6,18 +6,18 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Image Entity
+ * ProductImage Entity
  *
  * @property int $id
  * @property string $file_name
  * @property string $file_root
- * @property int $product_id
  * @property int $file_size_kb
  * @property string $file_type
+ * @property int $product_id
  *
  * @property \App\Model\Entity\Product $product
  */
-class Image extends Entity
+class ProductImage extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -31,9 +31,9 @@ class Image extends Entity
     protected $_accessible = [
         'file_name' => true,
         'file_root' => true,
-        'product_id' => true,
         'file_size_kb' => true,
         'file_type' => true,
+        'product_id' => true,
         'product' => true,
     ];
 }

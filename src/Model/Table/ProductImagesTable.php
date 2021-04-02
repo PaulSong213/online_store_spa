@@ -9,25 +9,25 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Images Model
+ * ProductImages Model
  *
  * @property \App\Model\Table\ProductsTable&\Cake\ORM\Association\BelongsTo $Products
  *
- * @method \App\Model\Entity\Image newEmptyEntity()
- * @method \App\Model\Entity\Image newEntity(array $data, array $options = [])
- * @method \App\Model\Entity\Image[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Image get($primaryKey, $options = [])
- * @method \App\Model\Entity\Image findOrCreate($search, ?callable $callback = null, $options = [])
- * @method \App\Model\Entity\Image patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Image[] patchEntities(iterable $entities, array $data, array $options = [])
- * @method \App\Model\Entity\Image|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Image saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Image[]|\Cake\Datasource\ResultSetInterface|false saveMany(iterable $entities, $options = [])
- * @method \App\Model\Entity\Image[]|\Cake\Datasource\ResultSetInterface saveManyOrFail(iterable $entities, $options = [])
- * @method \App\Model\Entity\Image[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
- * @method \App\Model\Entity\Image[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
+ * @method \App\Model\Entity\ProductImage newEmptyEntity()
+ * @method \App\Model\Entity\ProductImage newEntity(array $data, array $options = [])
+ * @method \App\Model\Entity\ProductImage[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\ProductImage get($primaryKey, $options = [])
+ * @method \App\Model\Entity\ProductImage findOrCreate($search, ?callable $callback = null, $options = [])
+ * @method \App\Model\Entity\ProductImage patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\ProductImage[] patchEntities(iterable $entities, array $data, array $options = [])
+ * @method \App\Model\Entity\ProductImage|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\ProductImage saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\ProductImage[]|\Cake\Datasource\ResultSetInterface|false saveMany(iterable $entities, $options = [])
+ * @method \App\Model\Entity\ProductImage[]|\Cake\Datasource\ResultSetInterface saveManyOrFail(iterable $entities, $options = [])
+ * @method \App\Model\Entity\ProductImage[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
+ * @method \App\Model\Entity\ProductImage[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
  */
-class ImagesTable extends Table
+class ProductImagesTable extends Table
 {
     /**
      * Initialize method
@@ -39,7 +39,7 @@ class ImagesTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('images');
+        $this->setTable('product_images');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
@@ -80,7 +80,7 @@ class ImagesTable extends Table
 
         $validator
             ->scalar('file_type')
-            ->maxLength('file_type', 120)
+            ->maxLength('file_type', 64)
             ->requirePresence('file_type', 'create')
             ->notEmptyFile('file_type');
 

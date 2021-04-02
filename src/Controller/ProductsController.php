@@ -20,7 +20,7 @@ class ProductsController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Sellers', 'ProductTypes','Images'],
+            'contain' => ['Sellers', 'ProductTypes','ProductImages'],
             
         ];
         $products = $this->paginate($this->Products);
@@ -38,7 +38,7 @@ class ProductsController extends AppController
     public function view($id = null)
     {
         $product = $this->Products->get($id, [
-            'contain' => ['Sellers', 'ProductTypes', 'Tags', 'Carts','Images'],
+            'contain' => ['Sellers', 'ProductTypes', 'Tags', 'Carts','ProductImages'],
         ]);
 
         $this->set(compact('product'));
@@ -128,7 +128,7 @@ class ProductsController extends AppController
             $requestedProductTypeName = "allProducts";
             if($productTypeId > 0 && !$productRequestList ){
                 $this->paginate = [
-                    'contain' => ['Sellers', 'ProductTypes','Images','Tags'],
+                    'contain' => ['Sellers', 'ProductTypes','ProductImages','Tags'],
                     'conditions' =>['Products.product_type_id' => $productTypeId],
                     'order' => ['sold' => 'desc']
                 ];
@@ -143,7 +143,7 @@ class ProductsController extends AppController
 			}elseif(sizeof($productListId) > 0 ){
 				
 				$this->paginate = [
-                    'contain' => ['Sellers', 'ProductTypes','Images','Tags'],
+                    'contain' => ['Sellers', 'ProductTypes','ProductImages','Tags'],
                     'conditions' =>['Products.id in' => $productListId ],
                     'order' => ['sold' => 'desc']
                 ];
@@ -151,7 +151,7 @@ class ProductsController extends AppController
 				
 			}else{
                 $this->paginate = [
-                    'contain' => ['Sellers', 'ProductTypes','Images','Tags'],
+                    'contain' => ['Sellers', 'ProductTypes','ProductImages','Tags'],
                 ];
             }
 			

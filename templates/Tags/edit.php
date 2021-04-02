@@ -23,10 +23,11 @@
                 <legend><?= __('Edit Tag') ?></legend>
                 <?php
                     echo $this->Form->control('name');
+                    echo $this->Form->control('logo_path');                    
                     echo $this->Form->control('products._ids', [
-						'options' => $products,
-						'class' => 'h-96'
-					]);
+                        'options' => $products,
+                        'class' => 'h-96'
+                    ]);
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

@@ -61,7 +61,7 @@ class ProductsTable extends Table
         $this->hasMany('Carts', [
             'foreignKey' => 'product_id',
         ]);
-        $this->hasMany('Images', [
+        $this->hasMany('ProductImages', [
             'foreignKey' => 'product_id',
         ]);
         $this->belongsToMany('Tags', [

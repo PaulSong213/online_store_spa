@@ -1,6 +1,7 @@
 
 import {createApp} from 'vue';
 
+
 //component
 import FilterTag from './components/filter-tag.vue';
 import CircleLoader from './components/circle-loader.vue';
@@ -10,6 +11,11 @@ import DiscoverProductCard from './components/discover-product-card.vue';
 import DiscoverProductOnTab from './components/discover-product-on-tab.vue';
 import ItemNotFound from './components/item-not-found.vue';
 import HeroImages from './components/hero-images.vue';
+
+//external components
+//https://antoniandre.github.io/vueper-slides/?ref=madewithvuejs.com
+import { VueperSlides, VueperSlide } from 'vueperslides';
+import 'vueperslides/dist/vueperslides.css';
 
 //views
 import App from './App.vue';
@@ -27,13 +33,15 @@ const routes = {
 
 
 const app = createApp(App)
-		.component('reached-end-message', ReachedEndMessage)
-		.component('circle-loader', CircleLoader)
-		.component('filter-tag', FilterTag)
-                .component('item-not-found', ItemNotFound)
-                .component('hero-images', HeroImages)
-		.component('featured-product-card', FeaturedProductCard)
-		.component('discover-product-card', DiscoverProductCard)
-		.component('discover-product-on-tab', DiscoverProductOnTab)
-		.component('current-route', routes[window.location.pathname] || routes['notFound'])
-		.mount("#app");
+        .component('vueper-slides', VueperSlides)
+        .component('vueper-slide', VueperSlide)
+        .component('reached-end-message', ReachedEndMessage)
+        .component('circle-loader', CircleLoader)
+        .component('filter-tag', FilterTag)
+        .component('item-not-found', ItemNotFound)
+        .component('hero-images', HeroImages)
+        .component('featured-product-card', FeaturedProductCard)
+        .component('discover-product-card', DiscoverProductCard)
+        .component('discover-product-on-tab', DiscoverProductOnTab)
+        .component('current-route', routes[window.location.pathname] || routes['notFound'])
+        .mount("#app");

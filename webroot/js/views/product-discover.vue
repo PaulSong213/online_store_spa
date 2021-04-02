@@ -4,8 +4,13 @@
     <h6 class="my-auto font-bold text-xl text-gray-500">PAUL SHOP</h6>
     <div class="hero content">
         
-        <hero-images></hero-images>
-        <filter-tag :tags="tags"></filter-tag>
+        <div class="">
+            <hero-images></hero-images>
+        </div>
+        
+        <div class="my-5 ">
+            <filter-tag :tags="tags"></filter-tag>
+        </div>
         
     </div>
     
@@ -91,7 +96,8 @@
     <!--INLINE TAB -->
     <transition name="inline-tab-slide-fade">
     <div class="fixed bg-white w-full h-full border-2 border-gray-300 bottom-0 left-2/4
-        shadow-2xl overflow-hidden max-w-screen-lg h-screen-90 transform -translate-x-1/2"
+        shadow-2xl overflow-hidden max-w-screen-lg h-screen-90 transform -translate-x-1/2
+        z-40"
         id="inlineTab"
         v-if="isInlineTabOpen">
             <div class="tab-head flex justify-between shadow-2xl p-5">
@@ -314,11 +320,11 @@ export default {
         };
     },
     mounted(){
-        this.addTagList()
-        //this.handleUrlGetRequest(),
-        //this.addBestSellerProduct('/products/show/1?limit=10', true),
-        //this.addDiscoverProduct('/products/show/2'),
-        //window.addEventListener('scroll', this.handleScrollDiscover)
+        this.addTagList(),
+        this.handleUrlGetRequest(),
+        this.addBestSellerProduct('/products/show/1?limit=10', true),
+        this.addDiscoverProduct('/products/show/2'),
+        window.addEventListener('scroll', this.handleScrollDiscover)
 	;
     },
     unmounted() {
@@ -398,8 +404,9 @@ export default {
                 if(willOpen){
                     if(tabComponentContent === 'featured-product-card' && 
                             this.getItemNextPage('Best Sellers') !== ""){
-                            this.addBestSellerProduct(this.getItemNextPage('Best Sellers'));
                             this.modifyUrlParameter("?bestseller=1");
+                            this.addBestSellerProduct(this.getItemNextPage('Best Sellers'));
+                            
                     }
 
                     //get related products of current item
@@ -489,6 +496,8 @@ export default {
         async addTagList(){
             let response = await $.get('/tags/show',function(data){return data });
             this.tags = JSON.parse(response);
+            //console.log(this.tags);
+            
             if(tagIdFromUrlGet && !productIdFromUrlGet ){
                 let isTagExist = false;
                 for(var i = 0; i < this.tags.length; i ++){
@@ -505,6 +514,7 @@ export default {
             }
         },
 	async getRelatedToTag(tagId, tagName,prevData = null){
+            this.modifyUrlParameter("?tag=" + tagId);            
             this.clearRelatedProductsOfTag();
             this.addingNewItem = true;
             this.toggleInlineTab(true,tagName,'discover-product-card-related-tags',
@@ -526,7 +536,7 @@ export default {
             }else{
                 this.addingNewItem = false;
             }
-            this.modifyUrlParameter("?tag=" + tagId);            
+            
         },
         async getRelatedToProducts(tagIds = []){
 
