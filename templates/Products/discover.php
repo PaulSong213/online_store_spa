@@ -7,7 +7,10 @@ $autoOpenBestSeller = false;
 if(isset($_GET['product'])){$productId = $_GET['product'];}
 if(isset($_GET['tag'])){$tagId = $_GET['tag'];}
 if(isset($_GET['bestseller'])){$autoOpenBestSeller = $_GET['bestseller'];}
+
+
 ?>
+
 
 <script>
     const productIdFromUrlGet = "<?= $productId ?>";

@@ -1,7 +1,8 @@
 <template>
 
-<div class="mb-10">
-    <h6 class="my-auto font-bold text-xl text-gray-500">PAUL SHOP</h6>
+<div class="mb-10"
+     v-on:click="addLocalCartCount()">
+    {{$store.state.count}}
     <div class="hero content">
         
         <div class="">

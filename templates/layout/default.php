@@ -26,10 +26,17 @@ $cakeDescription = 'Paul Shop';
         <?= $this->fetch('title') ?>
     </title>
 	
-    <?= $this->Html->meta('icon') ?>
-    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <?= $this->Html->meta(
+        'main-logo-min.png',    
+        '/img/logos/main-logo-min.png',
+        ['type' => 'icon']
+    ); ?>
+    
+    <script src="/public/js/app.js" type="module"></script>
+    <link href="/public/css/app.css" rel="stylesheet">
+    
+   
     <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
-    <?= $this->Html->css(['tailwindcss/dist/tailwind','normalize.min', 'milligram.min', 'cake']) ?>
     <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     
@@ -37,27 +44,23 @@ $cakeDescription = 'Paul Shop';
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
 	
-    <script src="/public/js/app.js" type="module"></script>
-	
+    
 </head>
 <body>
-    <nav class="top-nav">
-        <div class="top-nav-title">
-            <a href="<?= $this->Url->build('/') ?>"><span>Cake</span>PHP</a>
-        </div>
-        <div class="top-nav-links">
-            <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Documentation</a>
-            <a target="_blank" rel="noopener" href="https://api.cakephp.org/">API</a>
-        </div>
-		
+    <nav class="mb-10 px-5 max-w-screen-2xl mx-auto"
+         id="top-nav">
+        <!--vue top navigation component will be mounted here-->
     </nav>
-    <main class="main">
+    
+
         <div class="container">
             <?= $this->Flash->render() ?>
-			<div id="app"></div>
+            <div id="app">
+                <!--vue component will be mounted here depends on the current link--> 
+            </div>
             <?= $this->fetch('content') ?>
         </div>
-    </main>
+    
     <footer>
     </footer>
 </body>

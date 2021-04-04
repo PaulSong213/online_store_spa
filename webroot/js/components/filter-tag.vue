@@ -1,36 +1,14 @@
 <template>
-   
-        
-<!--        
-        
-            
-        <div class="p-2  w-40 h-full min-h-full inline-block mr-4 
-            bg-white hover:bg-yellow-300 select-none cursor-pointer  
-            rounded-md border border-2 border-gray-400 hover:border-opacity-0
-            active:bg-red-900 active:text-gray-100"
-            v-for="tag in tags"
-            
-            >
-            <img :src="tag.logo_path" alt="tag logo" class="h-10 block mx-auto" /> 
-
-            <h5 class="text-xl  text-center block my-5 font-black"
-                style="color: inherit"
-            >{{tag.name}}
-            </h5>
-        </div>
-
-        </div>-->
-    
-    
     <vueper-slides
         v-if="formmatedTags.length > 1"
         class="no-shadow py-2"
+        lazy lazy-load-on-drag
         :slide-ratio="1 / 14"
         :gap="1"
         slide-multiple
         :visible-slides="10.5"
         :bullets="false"
-        :dragging-distance="100"
+        :dragging-distance="50"
         :breakpoints="breakpoints"
         :arrows="false"
         >
@@ -57,11 +35,18 @@
         background-color: transparent;
         color: #666666;
     }
+    
+    .vueperslide__content-wrapper:not(.vueperslide__content-wrapper--outside-top):not
+    (.vueperslide__content-wrapper--outside-bottom) {
+        paddding: 4px;
+    }
+    
 </style>
 <script>
 export default {
     data() {
         return {
+            isAtLargeScreen: screen.width > 1023,
             formmatedTags: Array(),
             breakpoints: {
                 1200: {
@@ -87,7 +72,9 @@ export default {
               let htmlContent = `
                     <div class="">
                     <img src=" ` + tagList[i].logo_path +` " alt="tag logo"
-                        class="h-10 mx-auto hidden md:block"/>
+                        class="h-10 mx-auto hidden lg:block"
+                        v-if="isAtLargeScreen"
+                        />
                     <h3 class="text-base md:text-xl  text-cen col-span-7ter block my-5 
                         line-clamp-2"
                         style="color:inherit"> 

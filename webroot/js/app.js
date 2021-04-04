@@ -1,6 +1,6 @@
 
 import {createApp} from 'vue';
-
+import { createStore } from 'vuex'
 
 //component
 import FilterTag from './components/filter-tag.vue';
@@ -23,6 +23,10 @@ import ProductDiscover from './views/product-discover.vue';
 import ProductIndex from './views/product-index.vue';
 import NotFound from './views/not-found.vue'; //empty template for views that do not need vue
 
+//global views
+import TopNavigation from './views/top-navigation.vue';
+
+
 const routes = {
   '/products': ProductIndex,
   '/products/index': ProductIndex,
@@ -31,8 +35,25 @@ const routes = {
   'notFound': NotFound,
 }
 
+const store = createStore({
+  state () {
+    return {
+      count: 0
+    }
+  },
+  mutations: {
+    increment (state) {
+      state.count++
+    }
+  }
+})
+
+const topNav = createApp(TopNavigation)
+        .use(store)
+        .mount('#top-nav');
 
 const app = createApp(App)
+        .use(store)
         .component('vueper-slides', VueperSlides)
         .component('vueper-slide', VueperSlide)
         .component('reached-end-message', ReachedEndMessage)

@@ -114,7 +114,7 @@ class ProductsController extends AppController
         return $this->redirect(['action' => 'index']);
     }
     
-    public function discover($productId = null)
+    public function discover()
     {
         
     }
