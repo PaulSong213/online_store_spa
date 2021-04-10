@@ -11,7 +11,8 @@ import DiscoverProductCard from './components/discover-product-card.vue';
 import DiscoverProductOnTab from './components/discover-product-on-tab.vue';
 import ItemNotFound from './components/item-not-found.vue';
 import HeroImages from './components/hero-images.vue';
-
+import AddFavorite from './components/add-favorite.vue';
+import InlineTab from './components/inline-tab.vue';
 //external components
 //https://antoniandre.github.io/vueper-slides/?ref=madewithvuejs.com
 import { VueperSlides, VueperSlide } from 'vueperslides';
@@ -36,16 +37,26 @@ const routes = {
 }
 
 const store = createStore({
-  state () {
-    return {
-      count: 0
-    }
-  },
+    state () {
+      return {
+        lovedProductIds: Array(),
+        isLovedProductTabOpen: false,
+        offlineLovedProductCookie: "offline_loved_product_id"
+      }
+    },
   mutations: {
-    increment (state) {
-      state.count++
+    getLovedItemsOnCookie(state){
+        state.lovedProductIds = remove_duplicates_es6(JSON.parse(getCookie(state.offlineLovedProductCookie)));
+        //console.log(state.lovedProductIds);
+    },
+    openLovedItemTab(state){
+        state.isLovedProductTabOpen = true;
+    },
+    closeLovedItemTab(state){
+        state.isLovedProductTabOpen = false;
     }
-  }
+},
+  
 })
 
 const topNav = createApp(TopNavigation)
@@ -54,6 +65,7 @@ const topNav = createApp(TopNavigation)
 
 const app = createApp(App)
         .use(store)
+        .component('add-favorite',AddFavorite)
         .component('vueper-slides', VueperSlides)
         .component('vueper-slide', VueperSlide)
         .component('reached-end-message', ReachedEndMessage)
@@ -65,4 +77,5 @@ const app = createApp(App)
         .component('discover-product-card', DiscoverProductCard)
         .component('discover-product-on-tab', DiscoverProductOnTab)
         .component('current-route', routes[window.location.pathname] || routes['notFound'])
+        .component('inline-tab',InlineTab)
         .mount("#app");

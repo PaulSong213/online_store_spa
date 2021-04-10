@@ -1,7 +1,7 @@
 <template>
 <section class="bg-red-700
          rounded-md p-5 flex justify-between
-         align-center py-12" v-on:click="increment()" >
+         align-center py-12" >
     
     <div class="flex space-x-2 w-full">
         <img src="/img/logos/main-logo-white-min.png" alt="logo" 
@@ -49,22 +49,30 @@
     </div>
     <div class="w-full flex space-x-8 justify-end">
         <div class="my-auto">
-            <div class="rounded-full bg-yellow-600 z-20 px-2 w-max" 
+            <div class="rounded-full bg-yellow-600 z-20 px-2 py-1 w-max" 
                  style="margin-bottom: -20%;margin-left: -50%;min-height: 1rem">
-                <h1 class="text-gray-100 text-base table m-auto text-center">
-                    {{$store.state.count}}
-                </h1>
-            </div>
-            <ion-icon name="cart" class="nav-action z-10"></ion-icon>
-        </div>
-        <div class="my-auto">
-            <div class="rounded-full bg-yellow-600 z-20 px-2 w-max" 
-                 style="margin-bottom: -20%;margin-left: -50%;min-height: 1rem">
-                <h1 class="text-gray-100 text-base table m-auto text-center">
+                <h1 class="text-gray-100 text-base table m-auto leading-4 select-none">
                    0
                 </h1>
             </div>
-            <ion-icon name="heart" class="nav-action"></ion-icon>
+            
+            <span title="Your Cart"
+                  class="nav-action">
+                <ion-icon name="cart"></ion-icon> 
+            </span>
+        </div>
+        <div class="my-auto">
+            <div class="rounded-xl bg-yellow-600 z-20 px-2 py-1 w-max" 
+                 style="margin-bottom: -20%;margin-left: -50%;min-height: 1rem">
+                <h1 class="text-gray-100 text-base table m-auto  leading-4 select-none">
+                    {{$store.state.lovedProductIds.length}}
+                </h1>
+            </div>
+            <span title="Loved Product"
+                  class="nav-action"
+                  v-on:click="openLovedItemTab()">
+                <ion-icon name="heart"></ion-icon> 
+            </span>
         </div>
     </div>
 </section>
@@ -79,9 +87,18 @@
             }
         },
         methods: {
-            increment() {
-                this.$store.commit('increment')
-                console.log(this.$store.state.count)
+            openLovedItemTab() {
+                this.$store.commit('openLovedItemTab');
+            }
+        },
+        mounted(){
+            this.$store.commit('getLovedItemsOnCookie');
+        },
+         watch: {
+            isLovedProductTabOpen(isCurrentlyOpened){
+                if(isCurrentlyOpened){
+                   this.openFavoriteProducts();
+                }
             }
         }
    };

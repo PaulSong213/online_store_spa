@@ -13,6 +13,7 @@ and open the template in the editor.
 
 ion-icon{
     margin-bottom: -2px;
+    pointer-events: none;
 }
 
 @tailwind components;
@@ -23,8 +24,8 @@ ion-icon{
 }
 
 .nav-action{
-    @apply text-red-600 text-3xl font-bold hover:text-red-600 active:text-gray-800
-        block my-auto focus:text-yellow-900 cursor-pointer hover:text-red-900;
+    @apply text-red-600 text-3xl font-bold  block my-auto  cursor-pointer 
+         hover:text-yellow-500 active:text-red-500 transition-colors;
 }
 
 .nav-link{

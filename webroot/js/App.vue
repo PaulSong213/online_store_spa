@@ -1,6 +1,6 @@
 <template>
 	
-	<current-route ref="currentRoute"></current-route>
+    <current-route ref="currentRoute"></current-route>
 	
 </template>
 <script>

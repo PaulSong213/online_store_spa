@@ -55,6 +55,7 @@ html, .tab-content {
   margin-bottom: -50%;
 }
 
+
 .fade-enter-active,
 .fade-leave-active {
   transition: all 150ms ease-out;
@@ -1036,6 +1037,7 @@ video {
 
 ion-icon{
   margin-bottom: -2px;
+  pointer-events: none;
 }
 
 .container {
@@ -1113,19 +1115,18 @@ ion-icon{
 
 .nav-action:hover {
   --tw-text-opacity: 1;
-  color: rgba(220, 38, 38, var(--tw-text-opacity));
-  --tw-text-opacity: 1;
-  color: rgba(127, 29, 29, var(--tw-text-opacity));
-}
-
-.nav-action:focus {
-  --tw-text-opacity: 1;
-  color: rgba(120, 53, 15, var(--tw-text-opacity));
+  color: rgba(245, 158, 11, var(--tw-text-opacity));
 }
 
 .nav-action:active {
   --tw-text-opacity: 1;
-  color: rgba(31, 41, 55, var(--tw-text-opacity));
+  color: rgba(239, 68, 68, var(--tw-text-opacity));
+}
+
+.nav-action {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 
 .nav-link{
